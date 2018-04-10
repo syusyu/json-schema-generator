@@ -27,7 +27,8 @@ const log = (type) => console.log.bind(console, type);
 const data = {
     "k1": "v1",
     "k2": {
-        "k21": "v21"
+        "k21": "v21",
+        "k22": "v22"
     }
 };
 
@@ -47,25 +48,36 @@ class App extends Component {
     };
 
     createDom(data) {
-        if (!data) return null;
-
         let contents = [];
         for (let key of Object.keys(data)) {
             let val = data[key];
             contents.push(React.createElement('dt', null, key));
-            contents.push(React.createElement('dd', null, val && typeof val != "object" ? val : this.createDom(val)));
+            contents.push(React.createElement('dd', null, val && typeof val !== 'object' ? val : this.createDom(val)));
         }
         let dl = React.createElement('dl', null, contents);
         return dl;
     };
 
-    return_two() {
-        return 2;
-    }
+    schemaReplaceKeys(schema, keyPrefix) {
+        keyPrefix = keyPrefix ? keyPrefix + '.' : '';
+        let props = schema.properties;
+        let result = [];
+        for (let key of Object.keys(props)) {
+            let val = props[key];
+            if (val.type === 'object') {
+                result.push(this.schemaReplaceKeys(val, keyPrefix + key));
+            } else if (val.type === 'array') {
+            } else {
+                result.push(keyPrefix + key);
+            }
+        }
+        return result;
+    };
+
     render() {
         return (
             <div>
-                {this.adjust_api_result()}
+                {this.createDom(data)}
                 {elem_final}
             </div>
         );
