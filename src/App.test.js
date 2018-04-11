@@ -100,7 +100,7 @@ const schema = {
 const expectedKeys = [`title`, `done`, `selection`, `grandpa.papa`, `grandpa.mama.oki`, `grandpa.mama.rio`];
 
 it('Get schema replace keys', () => {
-    expect(app.schemaReplaceKeys(schema, '')).toEqual(expectedKeys);
+    expect(app.schemaReplaceKeys(schema)).toEqual(expectedKeys);
 });
 
 /**************** schemaGroup ***********************/
@@ -182,18 +182,28 @@ const expectedNonReplaceData = {
     }
 };
 
-let idxObj = {idx: 0};
-it('Replace data by keys', () => {
-    idxObj.idx = 0;
-    expect(app.replaceDataBySchemaGroup(data, '', replaceKeys, idxObj)).toEqual(expectedReplaceData);
-    idxObj.idx = 0;
-    expect(app.replaceDataBySchemaGroup(data, '', replaceKeys2, idxObj)).toEqual(expectedReplaceData2);
-    idxObj.idx = 0;
-    expect(app.replaceDataBySchemaGroup(data, '', replaceKeys3, idxObj)).toEqual(expectedReplaceData3);
-    idxObj.idx = 0;
-    expect(app.replaceDataBySchemaGroup(data, '', replaceKeys4, idxObj)).toEqual(expectedNonReplaceData);
-    idxObj.idx = 0;
-    expect(app.replaceDataBySchemaGroup(data, '', replaceKeys5, idxObj)).toEqual(expectedNonReplaceData);
+describe('Replace data by keys', () => {
+    let idxObj = {idx: 0};
+    it('Schema group 1', () => {
+        idxObj.idx = 0;
+        expect(app.replaceDataBySchemaGroup(data, '', replaceKeys, idxObj)).toEqual(expectedReplaceData);
+    });
+    it('Schema group 2', () => {
+        idxObj.idx = 0;
+        expect(app.replaceDataBySchemaGroup(data, '', replaceKeys2, idxObj)).toEqual(expectedReplaceData2);
+    });
+    it('Schema group 3', () => {
+        idxObj.idx = 0;
+        expect(app.replaceDataBySchemaGroup(data, '', replaceKeys3, idxObj)).toEqual(expectedReplaceData3);
+    });
+    it('Schema group 4', () => {
+        idxObj.idx = 0;
+        expect(app.replaceDataBySchemaGroup(data, '', replaceKeys4, idxObj)).toEqual(expectedNonReplaceData);
+    });
+    it('Schema group 5', () => {
+        idxObj.idx = 0;
+        expect(app.replaceDataBySchemaGroup(data, '', replaceKeys5, idxObj)).toEqual(expectedNonReplaceData);
+    });
 });
 
 /**************** Filter schema properties ***********************/
@@ -206,7 +216,7 @@ const filterKeys6 = [`title`];
 const filterKeys7 = [`grandpa.mama.rio`];
 const filterKeys8 = [`title`, `selection`, `grandpa.mama.oki`];
 
-const schema = {
+const expectedSchema = {
     title: "Todo", type: "object", required: ["title"], properties: {
         title: {type: "string", title: "Title", default: "A new task"},
         done: {type: "boolean", title: "Done?", default: false},
@@ -218,7 +228,7 @@ const schema = {
                         "rio": {type: "array", items: {properties: {
                                     "apple": {type: "string", title: "I like an apple"},
                                     "orange": {type: "string", title: "I like an orange"}}}}}}}}}};
-const schema2 = {
+const expectedSchema2 = {
     title: "Todo", type: "object", required: ["title"], properties: {
         selection: {type: "integer", title: "Select!"},
         grandpa: {type: "object", title: "", properties: {
@@ -228,7 +238,7 @@ const schema2 = {
                         "rio": {type: "array", items: {properties: {
                                     "apple": {type: "string", title: "I like an apple"},
                                     "orange": {type: "string", title: "I like an orange"}}}}}}}}}};
-const schema3 = {
+const expectedSchema3 = {
     title: "Todo", type: "object", required: ["title"], properties: {
         grandpa: {type: "object", title: "", properties: {
                 "papa": {type: "string", title: "I'm Papito"},
@@ -237,7 +247,7 @@ const schema3 = {
                         "rio": {type: "array", items: {properties: {
                                     "apple": {type: "string", title: "I like an apple"},
                                     "orange": {type: "string", title: "I like an orange"}}}}}}}}}};
-const schema4 = {
+const expectedSchema4 = {
     title: "Todo", type: "object", required: ["title"], properties: {
         grandpa: {type: "object", title: "", properties: {
                 "mama": {type: "object", title: "", properties: {
@@ -245,24 +255,24 @@ const schema4 = {
                         "rio": {type: "array", items: {properties: {
                                     "apple": {type: "string", title: "I like an apple"},
                                     "orange": {type: "string", title: "I like an orange"}}}}}}}}}};
-const schema5 = {
+const expectedSchema5 = {
     title: "Todo", type: "object", required: ["title"], properties: {
         grandpa: {type: "object", title: "", properties: {
                 "mama": {type: "object", title: "", properties: {
                         "oki": {type: "string", title: "I'm a child"}}}}}}};
 
-const schema6 = {
+const expectedSchema6 = {
     title: "Todo", type: "object", required: ["title"], properties: {
         title: {type: "string", title: "Title", default: "A new task"}}}
 
-const schema7 = {
+const expectedSchema7 = {
     title: "Todo", type: "object", required: ["title"], properties: {
         grandpa: {type: "object", title: "", properties: {
                 "mama": {type: "object", title: "", properties: {
                         "rio": {type: "array", items: {properties: {
                                     "apple": {type: "string", title: "I like an apple"},
                                     "orange": {type: "string", title: "I like an orange"}}}}}}}}}};
-const schema8 = {
+const expectedSchema8 = {
     title: "Todo", type: "object", required: ["title"], properties: {
         title: {type: "string", title: "Title", default: "A new task"},
         selection: {type: "integer", title: "Select!"},
@@ -271,6 +281,11 @@ const schema8 = {
                         "oki": {type: "string", title: "I'm a child"},
                                     "orange": {type: "string", title: "I like an orange"}}}}}}};
 
-it('Filter schema', () => {
-    
-});
+describe('Filter schema', () => {
+    it('filter', () => {
+        expect(app.filterSchemaProps(schema, filterKeys)).toEqual(expectedSchema);
+    });
+    it('filter2', () => {
+        expect(app.filterSchemaProps(schema, filterKeys2)).toEqual(expectedSchema2);
+    });
+ });

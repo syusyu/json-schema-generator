@@ -90,7 +90,7 @@ class App extends Component {
         for (let key of Object.keys(props)) {
             let wholeKey = keyPrefix ? keyPrefix + '.' + key: key;
             let val = props[key];
-            if (val.type === 'object') {
+            if (this.isSchemaTypeObject(val)) {
                 result.push(...this.schemaReplaceKeys(val, wholeKey));
             } else {
                 result.push(wholeKey);
@@ -129,9 +129,36 @@ class App extends Component {
         return result;
     }
 
+
+    filterSchemaProps(data, filter, keyPrefix, isInsideProperties) {
+        let result = {};
+        for (let key of Object.keys(data)) {
+            let wholeKey = keyPrefix ? keyPrefix + '.' + key: key;
+            if (this.isPropertyRemoved(wholeKey, filter, isInsideProperties)) {
+                continue;
+            }
+            let val = data[key];
+            result[key] = this.isObject(val) ? this.filterSchemaProps(val, filter, wholeKey, this.isInsidePropertiesOn(key, isInsideProperties)) : val;
+        }
+        return result;
+    };
+
+    isPropertyRemoved(wholeKey, filter, isInsideProperties) {
+        return isInsideProperties && (!filter || !filter.includes(wholeKey));
+    };
+    isInsidePropertiesOn(key, isInsideProperties) {
+        return isInsideProperties || key === 'properties'
+    }
+
     isArrayOrObject(val) {
         return (val && typeof val === 'object') || Array.isArray(val);
     };
+    isObject(val) {
+        return val && typeof val === 'object';
+    };
+    isSchemaTypeObject(val) {
+        return val && val.type === 'object';
+    }
 
     render() {
         return (
