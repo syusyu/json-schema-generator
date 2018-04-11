@@ -75,8 +75,21 @@ const schema = {
                 },
                 "mama": {
                     type: "object", title: "", properties: {
-                        "child": {
+                        "oki": {
                             type: "string", title: "I'm a child"
+                        },
+                        "rio": {
+                            type: "array",
+                            items: {
+                                properties: {
+                                    "apple": {
+                                        type: "string", title: "I like an apple"
+                                    },
+                                    "orange": {
+                                        type: "string", title: "I like an orange"
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -84,10 +97,10 @@ const schema = {
         }
     }
 };
-const expectedKeys = [`title`, `done`, `selection`, `grandpa.papa`, `grandpa.mama.child`];
+const expectedKeys = [`title`, `done`, `selection`, `grandpa.papa`, `grandpa.mama.oki`, `grandpa.mama.rio`];
 
 it('Get schema replace keys', () => {
-    expect(app.schemaReplaceKeys(schema)).toEqual(expectedKeys);
+    expect(app.schemaReplaceKeys(schema, '')).toEqual(expectedKeys);
 });
 
 /**************** schemaGroup ***********************/

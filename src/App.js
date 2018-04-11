@@ -73,37 +73,32 @@ class App extends Component {
             return this.doCreateDom(data);
         }
     };
-
     doCreateDom(data) {
         let elements = [];
         for (let key of Object.keys(data)) {
             let val = data[key];
             elements.push(React.createElement('dt', null, key));
-            if (val && typeof val === 'object' || Array.isArray(val)) {
-                elements.push(React.createElement('dd', null, this.createDom(val)));
-            } else {
-                elements.push(React.createElement('dd', null, val));
-            }
+            elements.push(React.createElement('dd', null, this.isArrayOrObject(val) ? this.createDom(val) : val));
         }
         return React.createElement('dl', null, elements);
     };
 
 
-    schemaReplaceKeys(schema, keyPrefix) {
-        keyPrefix = keyPrefix ? keyPrefix + '.' : '';
-        let props = schema.properties;
+    schemaReplaceKeys(data, keyPrefix) {
+        let props = data.properties;
         let result = [];
         for (let key of Object.keys(props)) {
+            let wholeKey = keyPrefix ? keyPrefix + '.' + key: key;
             let val = props[key];
             if (val.type === 'object') {
-                result.push(...this.schemaReplaceKeys(val, keyPrefix + key));
-            } else if (val.type === 'array') {
+                result.push(...this.schemaReplaceKeys(val, wholeKey));
             } else {
-                result.push(keyPrefix + key);
+                result.push(wholeKey);
             }
         }
         return result;
     };
+
 
     replaceDataBySchemaGroup(data, keyPrefix, keysForReplace, idxObj) {
         if (Array.isArray(data)) {
@@ -116,7 +111,6 @@ class App extends Component {
             return this.doReplaceDataBySchemaGroup(data, keyPrefix, keysForReplace, idxObj);
         }
     }
-
     doReplaceDataBySchemaGroup(data, keyPrefix, keysForReplace, idxObj) {
         let result = {};
         let isPrevReplacable = false;
@@ -129,15 +123,15 @@ class App extends Component {
                 isPrevReplacable = true;
             } else {
                 isPrevReplacable = false;
-                if (val && typeof val === 'object' || Array.isArray(val)) {
-                    result[key] = this.replaceDataBySchemaGroup(val, wholeKey, keysForReplace, idxObj);
-                } else {
-                    result[key] = val;
-                }
+                result[key] = this.isArrayOrObject(val) ? this.replaceDataBySchemaGroup(val, wholeKey, keysForReplace, idxObj) : val;
             }
         }
         return result;
     }
+
+    isArrayOrObject(val) {
+        return (val && typeof val === 'object') || Array.isArray(val);
+    };
 
     render() {
         return (
