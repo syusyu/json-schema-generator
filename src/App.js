@@ -3,7 +3,11 @@ import {render} from "react-dom";
 
 import Form from "react-jsonschema-form";
 
-const schema = {
+const data_sample = {
+    k1: "v1"
+};
+
+const schema_sample = {
     title: "Todo",
     type: "object",
     required: ["title"],
@@ -24,17 +28,10 @@ const schema = {
 
 const log = (type) => console.log.bind(console, type);
 
-const data = {
-    "k1": "v1",
-    "k2": {
-        "k21": "v21",
-        "k22": "v22"
-    }
-};
 
 let elem_final = [];
 let elem_parts = <div><span>Yes!</span></div>;
-let elem_form = <Form schema={schema}
+let elem_form = <Form schema={schema_sample}
                         onChange={log("changed")}
                         onSubmit={log("submitted")}
                         onError={log("errors")}/>;
@@ -43,20 +40,32 @@ elem_final.push(elem_parts);
 elem_final.push(elem_form);
 
 class App extends Component {
-    adjust_api_result() {
-        return <div id="api-root">Root!</div>;
+    createDom(data) {
+        if (Array.isArray(data)) {
+            let elements = [];
+            for (let e of data) {
+                elements.push(this.createDom(e));
+            }
+            return elements;
+        } else {
+            return this.doCreateDom(data);
+        }
     };
 
-    createDom(data) {
-        let contents = [];
+    doCreateDom(data) {
+        let elements = [];
         for (let key of Object.keys(data)) {
             let val = data[key];
-            contents.push(React.createElement('dt', null, key));
-            contents.push(React.createElement('dd', null, val && typeof val !== 'object' ? val : this.createDom(val)));
+            elements.push(React.createElement('dt', null, key));
+            if (val && typeof val === 'object' || Array.isArray(val)) {
+                elements.push(React.createElement('dd', null, this.createDom(val)));
+            } else {
+                elements.push(React.createElement('dd', null, val));
+            }
         }
-        let dl = React.createElement('dl', null, contents);
-        return dl;
+        return React.createElement('dl', null, elements);
     };
+
 
     schemaReplaceKeys(schema, keyPrefix) {
         keyPrefix = keyPrefix ? keyPrefix + '.' : '';
@@ -65,7 +74,7 @@ class App extends Component {
         for (let key of Object.keys(props)) {
             let val = props[key];
             if (val.type === 'object') {
-                result.push(this.schemaReplaceKeys(val, keyPrefix + key));
+                result.push(...this.schemaReplaceKeys(val, keyPrefix + key));
             } else if (val.type === 'array') {
             } else {
                 result.push(keyPrefix + key);
@@ -77,7 +86,7 @@ class App extends Component {
     render() {
         return (
             <div>
-                {this.createDom(data)}
+                {this.createDom(data_sample)}
                 {elem_final}
             </div>
         );

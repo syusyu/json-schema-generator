@@ -4,40 +4,90 @@ import App from './App';
 
 const app = new App();
 
-it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<App />, div);
-  ReactDOM.unmountComponentAtNode(div);
-});
-
-
-it('Adjust api response', () => {
-    const res = app.adjust_api_result();
-    expect(res).toEqual(<div id="api-root">Root!</div>);
-});
-
 /**************** createDom ***********************/
 const data = {
-    "k1": "v1",
-    "k2": {
-        "k21": "v21"
-    }
+    "k33": [
+        {
+            "k331": "v331",
+            "k332": "v332",
+        },
+        {
+            "k333": "v333",
+            "k334": "v334",
+        }
+    ]
 };
 const expected =
     <dl>
-      <dt>k1</dt>
-        <dd>v1</dd>
-      <dt>k2</dt>
+        <dt>k33</dt>
         <dd>
-          <dl>
-              <dt>k21</dt>
-                <dd>v21</dd>
-          </dl>
+            <dl>
+                <dt>k331</dt>
+                <dd>v331</dd>
+                <dt>k332</dt>
+                <dd>v332</dd>
+            </dl>
+            <dl>
+                <dt>k333</dt>
+                <dd>v333</dd>
+                <dt>k334</dt>
+                <dd>v334</dd>
+            </dl>
+        </dd>
+    </dl>;
+
+    const data2 = {
+    "k1": "v1",
+    "k2": "v2",
+    "k3": {
+        "k31": "v31",
+        "k32": "v32",
+        "k33": [
+            {
+                "k331": "v331",
+                "k332": "v332",
+            },
+            {
+                "k333": "v333",
+                "k334": "v334",
+            }
+        ]
+    }
+};
+const expected2 =
+    <dl>
+        <dt>k1</dt>
+        <dd>v1</dd>
+        <dt>k2</dt>
+        <dd>v2</dd>
+        <dt>k3</dt>
+        <dd>
+            <dl>
+                <dt>k31</dt>
+                <dd>v31</dd>
+                <dt>k32</dt>
+                <dd>v32</dd>
+                <dt>k33</dt>
+                <dd>
+                    <dl>
+                        <dt>k331</dt>
+                        <dd>v331</dd>
+                        <dt>k332</dt>
+                        <dd>v332</dd>
+                    </dl>
+                    <dl>
+                        <dt>k333</dt>
+                        <dd>v333</dd>
+                        <dt>k334</dt>
+                        <dd>v334</dd>
+                    </dl>
+                </dd>
+            </dl>
         </dd>
     </dl>;
 
 it('Create DOM', () => {
-    expect(app.createDom(data)).toEqual(expected);
+    expect(app.createDom(data2)).toEqual(expected2);
 });
 
 /**************** schemaReplaceKeys ***********************/
