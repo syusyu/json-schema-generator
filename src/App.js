@@ -88,7 +88,7 @@ class App extends Component {
         let props = data.properties;
         let result = [];
         for (let key of Object.keys(props)) {
-            let wholeKey = keyPrefix ? keyPrefix + '.' + key: key;
+            let wholeKey = keyPrefix ? keyPrefix + '.properties.' + key: key;
             let val = props[key];
             if (this.isSchemaTypeObject(val)) {
                 result.push(...this.schemaReplaceKeys(val, wholeKey));
@@ -110,7 +110,7 @@ class App extends Component {
         } else {
             return this.doReplaceDataBySchemaGroup(data, keyPrefix, keysForReplace, idxObj);
         }
-    }
+    };
     doReplaceDataBySchemaGroup(data, keyPrefix, keysForReplace, idxObj) {
         let result = {};
         let isPrevReplacable = false;
@@ -127,34 +127,42 @@ class App extends Component {
             }
         }
         return result;
-    }
+    };
 
+    filterSchemaProps(data, filters, keyPrefix, addsForcibly) {
+        if (!filters) {
+            return data;
+        }
 
-    filterSchemaProps(data, filter, keyPrefix, isInsideProperties) {
         let result = {};
         for (let key of Object.keys(data)) {
             let wholeKey = keyPrefix ? keyPrefix + '.' + key: key;
-            if (this.isPropertyRemoved(wholeKey, filter, isInsideProperties)) {
-                continue;
-            }
             let val = data[key];
-            result[key] = this.isObject(val) ? this.filterSchemaProps(val, filter, wholeKey, this.isInsidePropertiesOn(key, isInsideProperties)) : val;
+            if (filters.includes(wholeKey)) {
+                result[key] = val;
+            } else if (this.containsStartsWith(wholeKey, filters)) {
+                result[key] = this.filterSchemaProps(val, filters, wholeKey, key !== 'properties');
+            } else if (addsForcibly) {
+                result[key] = val;
+            }
         }
         return result;
     };
 
-    isPropertyRemoved(wholeKey, filter, isInsideProperties) {
-        return isInsideProperties && (!filter || !filter.includes(wholeKey));
+    containsStartsWith(wholeKey, filters) {
+        for (let filter of filters) {
+            if (filter.startsWith(wholeKey)) {
+                return true;
+            }
+        }
+        return false;
     };
-    isInsidePropertiesOn(key, isInsideProperties) {
-        return isInsideProperties || key === 'properties'
-    }
 
     isArrayOrObject(val) {
         return (val && typeof val === 'object') || Array.isArray(val);
     };
     isObject(val) {
-        return val && typeof val === 'object';
+        return val && typeof val === 'object' && !Array.isArray(val);
     };
     isSchemaTypeObject(val) {
         return val && val.type === 'object';
