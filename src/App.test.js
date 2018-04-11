@@ -196,5 +196,81 @@ it('Replace data by keys', () => {
     expect(app.replaceDataBySchemaGroup(data, '', replaceKeys5, idxObj)).toEqual(expectedNonReplaceData);
 });
 
+/**************** Filter schema properties ***********************/
+const filterKeys = [`title`, `done`, `selection`, `grandpa.papa`, `grandpa.mama.oki`, `grandpa.mama.rio`];
+const filterKeys2 = [`selection`, `grandpa.papa`, `grandpa.mama.oki`, `grandpa.mama.rio`];
+const filterKeys3 = [`grandpa.papa`, `grandpa.mama.oki`, `grandpa.mama.rio`];
+const filterKeys4 = [`grandpa.mama.oki`, `grandpa.mama.rio`];
+const filterKeys5 = [`grandpa.mama.oki`];
+const filterKeys6 = [`title`];
+const filterKeys7 = [`grandpa.mama.rio`];
+const filterKeys8 = [`title`, `selection`, `grandpa.mama.oki`];
 
+const schema = {
+    title: "Todo", type: "object", required: ["title"], properties: {
+        title: {type: "string", title: "Title", default: "A new task"},
+        done: {type: "boolean", title: "Done?", default: false},
+        selection: {type: "integer", title: "Select!"},
+        grandpa: {type: "object", title: "", properties: {
+                "papa": {type: "string", title: "I'm Papito"},
+                "mama": {type: "object", title: "", properties: {
+                        "oki": {type: "string", title: "I'm a child"},
+                        "rio": {type: "array", items: {properties: {
+                                    "apple": {type: "string", title: "I like an apple"},
+                                    "orange": {type: "string", title: "I like an orange"}}}}}}}}}};
+const schema2 = {
+    title: "Todo", type: "object", required: ["title"], properties: {
+        selection: {type: "integer", title: "Select!"},
+        grandpa: {type: "object", title: "", properties: {
+                "papa": {type: "string", title: "I'm Papito"},
+                "mama": {type: "object", title: "", properties: {
+                        "oki": {type: "string", title: "I'm a child"},
+                        "rio": {type: "array", items: {properties: {
+                                    "apple": {type: "string", title: "I like an apple"},
+                                    "orange": {type: "string", title: "I like an orange"}}}}}}}}}};
+const schema3 = {
+    title: "Todo", type: "object", required: ["title"], properties: {
+        grandpa: {type: "object", title: "", properties: {
+                "papa": {type: "string", title: "I'm Papito"},
+                "mama": {type: "object", title: "", properties: {
+                        "oki": {type: "string", title: "I'm a child"},
+                        "rio": {type: "array", items: {properties: {
+                                    "apple": {type: "string", title: "I like an apple"},
+                                    "orange": {type: "string", title: "I like an orange"}}}}}}}}}};
+const schema4 = {
+    title: "Todo", type: "object", required: ["title"], properties: {
+        grandpa: {type: "object", title: "", properties: {
+                "mama": {type: "object", title: "", properties: {
+                        "oki": {type: "string", title: "I'm a child"},
+                        "rio": {type: "array", items: {properties: {
+                                    "apple": {type: "string", title: "I like an apple"},
+                                    "orange": {type: "string", title: "I like an orange"}}}}}}}}}};
+const schema5 = {
+    title: "Todo", type: "object", required: ["title"], properties: {
+        grandpa: {type: "object", title: "", properties: {
+                "mama": {type: "object", title: "", properties: {
+                        "oki": {type: "string", title: "I'm a child"}}}}}}};
 
+const schema6 = {
+    title: "Todo", type: "object", required: ["title"], properties: {
+        title: {type: "string", title: "Title", default: "A new task"}}}
+
+const schema7 = {
+    title: "Todo", type: "object", required: ["title"], properties: {
+        grandpa: {type: "object", title: "", properties: {
+                "mama": {type: "object", title: "", properties: {
+                        "rio": {type: "array", items: {properties: {
+                                    "apple": {type: "string", title: "I like an apple"},
+                                    "orange": {type: "string", title: "I like an orange"}}}}}}}}}};
+const schema8 = {
+    title: "Todo", type: "object", required: ["title"], properties: {
+        title: {type: "string", title: "Title", default: "A new task"},
+        selection: {type: "integer", title: "Select!"},
+        grandpa: {type: "object", title: "", properties: {
+                "mama": {type: "object", title: "", properties: {
+                        "oki": {type: "string", title: "I'm a child"},
+                                    "orange": {type: "string", title: "I like an orange"}}}}}}};
+
+it('Filter schema', () => {
+    
+});
