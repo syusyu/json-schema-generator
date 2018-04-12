@@ -25,6 +25,19 @@ const data_sample2 = {
         "branches": ["Tokyo", "Singapore"]}};
 
 const schema_sample = {
+    title: "",
+    type: "object",
+    required: ["title"],
+    properties: {
+        title: {type: "string", title: "", default: "A new task"},
+        done: {type: "boolean", title: "", default: false},
+        selection: {type: "integer", title: ""},
+        store: {
+            type: "object", title: "", properties: {
+                "branches": {type: "array", items: {type: "object", properties: {
+                            "people": {type: "array", items: {type: "object", properties: {
+                                        "age": {type: "integer"}}}}}}}}}}};
+const schema_sample_bk = {
     title: "Todo",
     type: "object",
     required: ["title"],
@@ -57,37 +70,35 @@ const schema_sample2 = {
 const log = (type) => console.log.bind(console, type);
 
 
-let elem_final = [];
-let elem_parts = <div><span>Yes!</span></div>;
-let elem_form = <Form schema={schema_sample} onChange={log("changed")} onSubmit={log("submitted")}
-                      onError={log("errors")}/>;
-
-elem_final.push(elem_parts);
-elem_final.push(elem_form);
 
 class App extends Component {
-    createDom(data, schema) {
-        data = schema ? this.processDataForDom(data, schema) : data;
+    build(data, schema) {
+        let processedData = schema ? this.processDataForDom(data, schema) : data;
+        return this.createElement(processedData, data);
+    }
+
+    createElement(data, wholeData) {
         if (Array.isArray(data)) {
             let elements = [];
             for (let e of data) {
-                elements.push(this.doCreateDom(e));
+                elements.push(this.doCreateElement(e, wholeData));
             }
             return elements;
         } else {
-            return this.doCreateDom(data);
+            return this.doCreateElement(data, wholeData);
         }
     };
-    doCreateDom(data) {
+    doCreateElement(data, wholeData) {
         let elements = [];
         for (let key of Object.keys(data)) {
             let val = data[key];
             elements.push(React.createElement('dt', null, key));
             if (key.startsWith(SCHEMA_GROUP)) {
-                console.log('####### schema=' + JSON.stringify(val));
+                log('####### schema=' + JSON.stringify(val));
+                // elements.push(React.createElement('dd', null, <Form schema={val} formData={wholeData}/>));
                 elements.push(React.createElement('dd', null, <Form schema={val} />));
             } else {
-                elements.push(React.createElement('dd', null, this.isArrayOrObject(val) ? this.createDom(val) : val));
+                elements.push(React.createElement('dd', null, this.isArrayOrObject(val) ? this.createElement(val, wholeData) : val));
             }
         }
         return React.createElement('dl', null, elements);
@@ -115,7 +126,7 @@ class App extends Component {
         for (let key of Object.keys(data)) {
             let val = data[key];
             if (key.startsWith(SCHEMA_GROUP)) {
-                result[key] = this.filterSchemaProps(schema, val, '', true);
+                result[key] = {schema: this.filterSchemaProps(schema, val, '', true)};
             } else {
                 result[key] = this.isArrayOrObject(val) ? this.insertSchemaIntoData(val, schema) : val;
             }
@@ -199,7 +210,7 @@ class App extends Component {
         let result = {};
         for (let key of Object.keys(data)) {
             let wholeKey = keyPrefix ? keyPrefix + '.' + key: key;
-            wholeKey = wholeKey.replace(/properties\./g, '').replace(/\.items\./g, '\.');
+            wholeKey = wholeKey.replace(/properties./g, '').replace(/.items./g, '.');
 
             let val = data[key];
             if (filters.includes(wholeKey)) {
@@ -207,6 +218,8 @@ class App extends Component {
             } else if (this.containsStartsWith(wholeKey, filters) || key === 'properties' || key === 'items') {
                 result[key] = this.filterSchemaProps(val, filters, wholeKey, (key !== 'properties' && key !== 'items'));
             } else if (addsForcibly) {
+                result[key] = val;
+            } else if (key === 'type') {
                 result[key] = val;
             }
         }
@@ -241,8 +254,7 @@ class App extends Component {
     render() {
         return (
             <div>
-                <Form schema={schema_sample2}/>
-                {this.createDom(data_sample, schema_sample)}
+                {this.build(data_sample, schema_sample)}
             </div>
         );
     };
