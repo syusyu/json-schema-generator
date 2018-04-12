@@ -78,7 +78,11 @@ class App extends Component {
         for (let key of Object.keys(data)) {
             let val = data[key];
             elements.push(React.createElement('dt', null, key));
-            elements.push(React.createElement('dd', null, this.isArrayOrObject(val) ? this.createDom(val) : val));
+            if (key.startsWith(SCHEMA_GROUP)) {
+                elements.push(React.createElement('dd', null, val));
+            } else {
+                elements.push(React.createElement('dd', null, this.isArrayOrObject(val) ? this.createDom(val) : val));
+            }
         }
         return React.createElement('dl', null, elements);
     };
@@ -88,7 +92,7 @@ class App extends Component {
         let props = data.properties;
         let result = [];
         for (let key of Object.keys(props)) {
-            let wholeKey = keyPrefix ? keyPrefix + '.properties.' + key: key;
+            let wholeKey = keyPrefix ? keyPrefix + '.' + key: key;
             let val = props[key];
             if (this.isSchemaTypeObject(val)) {
                 result.push(...this.schemaReplaceKeys(val, wholeKey));
@@ -119,7 +123,8 @@ class App extends Component {
             let val = data[key];
             if (keysForReplace && keysForReplace.includes(wholeKey)) {
                 let idx = isPrevReplacable ? idxObj.idx : ++idxObj.idx;
-                result[SCHEMA_GROUP + idx] = idx;
+                let keysOfSchemaGroup = result[SCHEMA_GROUP + idx];
+                result[SCHEMA_GROUP + idx] = keysOfSchemaGroup ? [...keysOfSchemaGroup, wholeKey] : [wholeKey];
                 isPrevReplacable = true;
             } else {
                 isPrevReplacable = false;
@@ -133,14 +138,15 @@ class App extends Component {
         if (!filters) {
             return data;
         }
-
         let result = {};
         for (let key of Object.keys(data)) {
             let wholeKey = keyPrefix ? keyPrefix + '.' + key: key;
+            wholeKey = wholeKey.replace(/properties./g, '');
+
             let val = data[key];
             if (filters.includes(wholeKey)) {
                 result[key] = val;
-            } else if (this.containsStartsWith(wholeKey, filters)) {
+            } else if (this.containsStartsWith(wholeKey, filters) || key === 'properties') {
                 result[key] = this.filterSchemaProps(val, filters, wholeKey, key !== 'properties');
             } else if (addsForcibly) {
                 result[key] = val;
@@ -178,3 +184,4 @@ class App extends Component {
 }
 
 export default App;
+

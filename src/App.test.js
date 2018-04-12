@@ -4,6 +4,7 @@ import App from './App';
 
 const app = new App();
 
+
 /**************** createDom ***********************/
 const data = {
     "k1": "v1",
@@ -104,8 +105,38 @@ const schema = {
         }
     }
 };
-const expectedKeys = [`title`, `done`, `selection`, `grandpa.properties.papa`,
-    `grandpa.properties.mama.properties.oki`, `grandpa.properties.mama.properties.rio`];
+const schema_array = {
+    title: "Todo",
+    type: "object",
+    required: ["title"],
+    properties: {
+        title: {type: "string", title: "Title", default: "A new task"},
+        done: {type: "boolean", title: "Done?", default: false},
+        selection: {type: "integer", title: "Select!"},
+        grandpa: {
+            type: "object",
+            title: "",
+            properties: {
+                "papa": {
+                    type: "string", title: "I'm Papito"
+                },
+                "mama": {
+                    type: "array", title: "", items: {
+                        properties: {
+                            "oki": {
+                                type: "string", title: "I'm a second"
+                            },
+                            "rio": {
+                                type: "string", title: "I'm a first"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+const expectedKeys = [`title`, `done`, `selection`, `grandpa.papa`, `grandpa.mama.oki`, `grandpa.mama.rio`];
 
 it('Get schema replace keys', () => {
     expect(app.schemaReplaceKeys(schema)).toEqual(expectedKeys);
@@ -119,18 +150,18 @@ const replaceKeys4 = [];
 const replaceKeys5 = null;
 
 const expectedReplaceData = {
-    "_schemaGroup1": 1,
+    "_schemaGroup1": ['k1'],
     "k2": "v2",
     "k3": {
-        "_schemaGroup2": 2,
+        "_schemaGroup2": ['k3.k31'],
         "k32": "v32",
         "k33": [
             {
-                "_schemaGroup3": 3,
+                "_schemaGroup3": ['k3.k33.k331'],
                 "k332": "v332",
             },
             {
-                "_schemaGroup4": 4,
+                "_schemaGroup4": ['k3.k33.k333'],
                 "k334": "v334",
             }
         ]
@@ -138,12 +169,12 @@ const expectedReplaceData = {
 };
 const expectedReplaceData2 = {
     "k1": "v1",
-    "_schemaGroup1": 1,
+    "_schemaGroup1": ['k2'],
     "k3": {
-        "_schemaGroup2": 2,
+        "_schemaGroup2": ['k3.k31', 'k3.k32'],
         "k33": [
             {
-                "_schemaGroup3": 3,
+                "_schemaGroup3": ['k3.k33.k331'],
                 "k332": "v332",
             },
             {
@@ -162,10 +193,10 @@ const expectedReplaceData3 = {
         "k32": "v32",
         "k33": [
             {
-                "_schemaGroup1": 1
+                "_schemaGroup1": ['k3.k33.k331', 'k3.k33.k332']
             },
             {
-                "_schemaGroup2": 2
+                "_schemaGroup2": ['k3.k33.k333', 'k3.k33.k334']
             }
         ]
     }
@@ -215,17 +246,14 @@ describe('Replace data by keys', () => {
 });
 
 /**************** Filter schema properties ***********************/
-const filterKeys  = [`properties.title`, `properties.done`, `properties.selection`, `properties.grandpa.properties.papa`,
-    `properties.grandpa.properties.mama.properties.oki`, `properties.grandpa.properties.mama.properties.rio`];
-const filterKeys2 = [`properties.selection`, `properties.grandpa.properties.papa`,
-    `properties.grandpa.properties.mama.properties.oki`, `properties.grandpa.properties.mama.properties.rio`];
-const filterKeys3 = [`properties.grandpa.properties.papa`, `properties.grandpa.properties.mama.properties.oki`,
-    `properties.grandpa.properties.mama.properties.rio`];
-const filterKeys4 = [`properties.grandpa.properties.mama.properties.oki`, `properties.grandpa.properties.mama.properties.rio`];
-const filterKeys5 = [`properties.grandpa.properties.mama.properties.oki`];
-const filterKeys6 = [`properties.title`];
-const filterKeys7 = [`properties.grandpa.properties.mama.properties.rio`];
-const filterKeys8 = [`properties.title`, `properties.selection`, `properties.grandpa.properties.mama.properties.oki`];
+const filterKeys  = [`title`, `done`, `selection`, `grandpa.papa`, `grandpa.mama.oki`, `grandpa.mama.rio`];
+const filterKeys2 = [`selection`, `grandpa.papa`, `grandpa.mama.oki`, `grandpa.mama.rio`];
+const filterKeys3 = [`grandpa.papa`, `grandpa.mama.oki`, `grandpa.mama.rio`];
+const filterKeys4 = [`grandpa.mama.oki`, `grandpa.mama.rio`];
+const filterKeys5 = [`grandpa.mama.oki`];
+const filterKeys6 = [`title`];
+const filterKeys7 = [`grandpa.mama.rio`];
+const filterKeys8 = [`title`, `selection`, `grandpa.mama.oki`];
 
 const expectedSchema = {
     title: "Todo", type: "object", required: ["title"], properties: {
@@ -322,3 +350,39 @@ describe('Filter schema', () => {
         expect(app.filterSchemaProps(schema, filterKeys8, '', true)).toEqual(expectedSchema8);
     });
  });
+
+/**************** Create DOM inserting JSON Schema ***********************/
+const realData = {
+    title: "THIS iS A SAMPLE PAGE!",
+    done: false,
+    selection: 1,
+    grandpa: {
+        "papa": "Hisito!",
+        "mama": {
+            "oki": "Yes, OKI!",
+            "rio": [
+                {"apple": "Fuji!"},
+                {"fruit": {name: "Ehime Orange!"}}]}}};
+
+const realData2_array = {
+    title: "THIS iS A SAMPLE PAGE!",
+    done: false,
+    selection: 1,
+    grandpa: {
+        "papa": "Hisito!",
+        "mama": [
+            {"oki": "Yes, OKI!"},
+            {"rio": [
+                    {"apple": "Fuji!"},
+                    {"fruit": {name: "Ehime Orange!"}}]}]}};
+
+const expectedReplacedData = {
+    "_schemaGroup1": ['title', 'done', 'selection'],
+    "grandpa": {
+        "_schemaGroup2": ['grandpa.papa'],
+        "mama": {
+                "_schemaGroup3": ['grandpa.mama.oki', 'grandpa.mama.rio']}}};
+
+// it('Create DOM inserting JSON Schema', () => {
+//     expect(app.createDom(data)).toEqual(expected);
+// });
