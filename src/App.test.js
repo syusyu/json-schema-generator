@@ -60,7 +60,7 @@ it('Create DOM', () => {
     expect(app.createDom(data)).toEqual(expected);
 });
 
-/**************** schemaReplaceKeys ***********************/
+/**************** extractSchemaReplaceKeys ***********************/
 const schema = {
     title: "Todo",
     type: "object",
@@ -148,16 +148,16 @@ const expectedKeysArray3 = [`grandpa.papa`, `grandpa.mama.oki`, `grandpa.mama.ri
 
 describe('Get schema replace keys', () => {
     it('object', () => {
-        expect(app.schemaReplaceKeys(schema)).toEqual(expectedKeys);
+        expect(app.extractSchemaReplaceKeys(schema)).toEqual(expectedKeys);
     });
     it('array1', () => {
-        expect(app.schemaReplaceKeys(schema_array)).toEqual(expectedKeysArray);
+        expect(app.extractSchemaReplaceKeys(schema_array)).toEqual(expectedKeysArray);
     });
     it('array2', () => {
-        expect(app.schemaReplaceKeys(schema_array2)).toEqual(expectedKeysArray2);
+        expect(app.extractSchemaReplaceKeys(schema_array2)).toEqual(expectedKeysArray2);
     });
     it('array3', () => {
-        expect(app.schemaReplaceKeys(schema_array3)).toEqual(expectedKeysArray3);
+        expect(app.extractSchemaReplaceKeys(schema_array3)).toEqual(expectedKeysArray3);
     });
 });
 
@@ -386,18 +386,38 @@ describe('Filter schema', () => {
     });
  });
 
-/**************** Create DOM inserting JSON Schema ***********************/
+/**************** Process data for making DOM ***********************/
 const realData = {
-    title: "THIS iS A SAMPLE PAGE!",
-    done: false,
-    selection: 1,
-    grandpa: {
+    "title": "THIS iS A SAMPLE PAGE!",
+    "done": false,
+    "selection": 1,
+    "grandpa": {
         "papa": "Hisito!",
         "mama": {
             "oki": "Yes, OKI!",
             "rio": [
                 {"apple": "Fuji!"},
-                {"fruit": {name: "Ehime Orange!"}}]}}};
+                {"fruit": {"name": "Ehime Orange!"}}]}}};
+const realSchema = {
+    title: "Todo",
+    type: "object",
+    required: ["title"],
+    properties: {
+        title: {type: "string", title: "Title", default: "A new task"},
+        done: {type: "boolean", title: "Done?", default: false},
+        selection: {type: "integer", title: "Select!"},
+        grandpa: {
+            type: "object",
+            title: "",
+            properties: {
+                "mama": {
+                    type: "object", title: "", properties: {
+                        "rio": {
+                            type: "array",
+                            items: {
+                                properties: {
+                                    "fruit": {type: "object", properties: {
+                                            name: {type: "string"}}}}}}}}}}}};
 const schemaGroup1 = {
     title: "Todo",
     type: "object",
@@ -462,6 +482,8 @@ const realData2_array = {
                     {"fruit": {name: "Ehime Orange!"}}]}]}};
 
 
-// it('Create DOM inserting JSON Schema', () => {
-//     expect(app.createDom(data)).toEqual(expected);
-// });
+describe('Process data for making DOM', () => {
+    it('object data', () => {
+        expect(app.processDataForDom(realData, realSchema)).toEqual(expectedReplacedData);
+    });
+})

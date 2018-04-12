@@ -88,14 +88,44 @@ class App extends Component {
     };
 
 
-    schemaReplaceKeys(data, keyPrefix) {
+    processDataForDom(data, schema) {
+        let keysReplacedBySchema = this.extractSchemaReplaceKeys(schema);
+        let dataReplacedBySchemaGroup = this.replaceDataBySchemaGroup(data, '', keysReplacedBySchema);
+        console.log('### keysReplacedBySchema=' + keysReplacedBySchema + ', dataReplacedBySchemaGroup=' + JSON.stringify(dataReplacedBySchemaGroup));
+        return this.insertSchemaIntoData(dataReplacedBySchemaGroup, schema);
+    }
+    insertSchemaIntoData(data, schema) {
+        if (Array.isArray(data)) {
+            let elements = [];
+            for (let e of data) {
+                elements.push(this.insertSchemaIntoData(e, schema));
+            }
+            return elements;
+        } else {
+            return this.doInsertSchemaIntoData(data, schema);
+        }
+    };
+    doInsertSchemaIntoData(data, schema) {
+        let result = {};
+        for (let key of Object.keys(data)) {
+            let val = data[key];
+            if (key.startsWith(SCHEMA_GROUP)) {
+                result[key] = this.filterSchemaProps(schema, val, '', true);
+            } else {
+                result[key] = this.isArrayOrObject(val) ? this.insertSchemaIntoData(val, schema) : val;
+            }
+        }
+        return result;
+    };
+
+    extractSchemaReplaceKeys(data, keyPrefix) {
         let props = this.extractProps(data);
         let result = [];
         for (let key of Object.keys(props)) {
             let wholeKey = keyPrefix ? keyPrefix + '.' + key: key;
             let val = props[key];
             if (this.isSchemaTypeArrayOrObject(val)) {
-                result.push(...this.schemaReplaceKeys(val, wholeKey));
+                result.push(...this.extractSchemaReplaceKeys(val, wholeKey));
             } else {
                 result.push(wholeKey);
             }
@@ -138,6 +168,7 @@ class App extends Component {
             let wholeKey = keyPrefix ? keyPrefix + '.' + key: key;
             let val = data[key];
             if (keysForReplace && keysForReplace.includes(wholeKey)) {
+                idxObj = idxObj ? idxObj : {idx: 0};
                 let idx = isPrevReplacable ? idxObj.idx : ++idxObj.idx;
                 let keysOfSchemaGroup = result[SCHEMA_GROUP + idx];
                 result[SCHEMA_GROUP + idx] = keysOfSchemaGroup ? [...keysOfSchemaGroup, wholeKey] : [wholeKey];
