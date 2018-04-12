@@ -418,48 +418,27 @@ const realSchema = {
                                 properties: {
                                     "fruit": {type: "object", properties: {
                                             name: {type: "string"}}}}}}}}}}}};
-const schemaGroup1 = {
-    title: "Todo",
-    type: "object",
-    required: ["title"],
-    properties: {
+const schemaGroup = {
+    title: "Todo", type: "object", required: ["title"], properties: {
         title: {type: "string", title: "Title", default: "A new task"},
         done: {type: "boolean", title: "Done?", default: false},
         selection: {type: "integer", title: "Select!"}
     }
 };
-const schemaGroup2= {
-    title: "Todo",
-    type: "object",
-    required: ["title"],
-    properties: {
+const schemaGroup1= {
+    title: "Todo", type: "object", required: ["title"], properties: {
         grandpa: {
             type: "object", title: "", properties: {
                 "mama": {
                     type: "object", title: "", properties: {
                         "rio": {
-                            type: "array",
-                            items: {
+                            type: "array", items: {
                                 properties: {
                                     "fruit": {
-                                        type: "object",
-                                        properties: {
-                                            name: {
-                                                type: "string"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-};
+                                        type: "object", properties: {
+                                            name: {type: "string"}}}}}}}}}}}};
 const expectedReplacedData = {
-    "_schemaGroup1": schemaGroup1,
+    "_schemaGroup1": schemaGroup,
     "grandpa": {
         "papa": "Hisito!",
         "mama": {
@@ -467,7 +446,8 @@ const expectedReplacedData = {
             "rio": [
                 {"apple": "Fuji!"},
                 {"fruit": {
-                    "_schemaGroup2": schemaGroup2}}]}}};
+                    "_schemaGroup2": schemaGroup1}}]}}};
+
 
 const realData2_array = {
     title: "THIS iS A SAMPLE PAGE!",
@@ -480,10 +460,63 @@ const realData2_array = {
             {"rio": [
                     {"apple": "Fuji!"},
                     {"fruit": {name: "Ehime Orange!"}}]}]}};
+const realSchema2 = {
+    title: "Todo",
+    type: "object",
+    required: ["title"],
+    properties: {
+        title: {type: "string", title: "Title", default: "A new task"},
+        done: {type: "boolean", title: "Done?", default: false},
+        selection: {type: "integer", title: "Select!"},
+        grandpa: {
+            type: "object",
+            title: "",
+            properties: {
+                "mama": {
+                    type: "array", title: "", properties: {
+                        "oki": {type: "string"},
+                        "rio": {
+                            type: "array",
+                            items: {
+                                properties: {
+                                    "fruit": {type: "object", properties: {
+                                            name: {type: "string"}}}}}}}}}}}};
+const schemaGroup2= {
+    title: "Todo", type: "object", required: ["title"], properties: {
+        grandpa: {
+            type: "object", title: "", properties: {
+                "mama": {
+                    type: "object", title: "", properties: {
+                        "oki": {type: "string"}}}}}}};
+const schemaGroup3= {
+    title: "Todo", type: "object", required: ["title"], properties: {
+        grandpa: {
+            type: "object", title: "", properties: {
+                "mama": {
+                    type: "object", title: "", properties: {
+                        "rio": {
+                            type: "array", items: {
+                                properties: {
+                                    "fruit": {
+                                        type: "object", properties: {
+                                            name: {type: "string"}}}}}}}}}}}};
+const expectedReplacedData2 = {
+    "_schemaGroup1": schemaGroup,
+    "grandpa": {
+        "papa": "Hisito!",
+        "mama": {
+            "_schemaGroup2": schemaGroup2,
+            "rio": [
+                {"apple": "Fuji!"},
+                {"fruit": {
+                        "_schemaGroup3": schemaGroup3}}]}}};
 
 
 describe('Process data for making DOM', () => {
     it('object data', () => {
         expect(app.processDataForDom(realData, realSchema)).toEqual(expectedReplacedData);
+    });
+    it('array data', () => {
+        expect(app.processDataForDom(realData2_array, realSchema2)).toEqual(expectedReplacedData2);
     });
 })
