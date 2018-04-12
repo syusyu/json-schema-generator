@@ -430,7 +430,7 @@ describe('Process data for making DOM', () => {
     it('object data', () => {
         expect(app.processDataForDom(realData, realSchema)).toEqual(expectedReplacedData);
     });
-    it('array data', () => {
-        expect(app.processDataForDom(realData2_array, realSchema2)).toEqual(expectedReplacedData2);
-    });
+    // it('array data', () => {
+    //     expect(app.processDataForDom(realData2_array, realSchema2)).toEqual(expectedReplacedData2);
+    // });
 })

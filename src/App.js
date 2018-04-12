@@ -95,8 +95,8 @@ class App extends Component {
             elements.push(React.createElement('dt', null, key));
             if (key.startsWith(SCHEMA_GROUP)) {
                 log('####### schema=' + JSON.stringify(val));
-                // elements.push(React.createElement('dd', null, <Form schema={val} formData={wholeData}/>));
-                elements.push(React.createElement('dd', null, <Form schema={val} />));
+                elements.push(React.createElement('dd', null, <Form schema={val.schema} formData={val.data}/>));
+                // elements.push(React.createElement('dd', null, <Form schema={val} />));
             } else {
                 elements.push(React.createElement('dd', null, this.isArrayOrObject(val) ? this.createElement(val, wholeData) : val));
             }
@@ -108,27 +108,29 @@ class App extends Component {
     processDataForDom(data, schema) {
         let keysReplacedBySchema = this.extractSchemaReplaceKeys(schema);
         let dataReplacedBySchemaGroup = this.replaceDataBySchemaGroup(data, '', keysReplacedBySchema);
-        return this.insertSchemaIntoData(dataReplacedBySchemaGroup, schema);
+        return this.insertSchemaIntoData(dataReplacedBySchemaGroup, schema, data);
     }
-    insertSchemaIntoData(data, schema) {
+    insertSchemaIntoData(data, schema, wholeData) {
         if (Array.isArray(data)) {
             let elements = [];
             for (let e of data) {
-                elements.push(this.doInsertSchemaIntoData(e, schema));
+                elements.push(this.doInsertSchemaIntoData(e, schema, wholeData));
             }
             return elements;
         } else {
-            return this.doInsertSchemaIntoData(data, schema);
+            return this.doInsertSchemaIntoData(data, schema, wholeData);
         }
     };
-    doInsertSchemaIntoData(data, schema) {
+    doInsertSchemaIntoData(data, schema, wholeData) {
         let result = {};
         for (let key of Object.keys(data)) {
             let val = data[key];
             if (key.startsWith(SCHEMA_GROUP)) {
-                result[key] = {schema: this.filterSchemaProps(schema, val, '', true)};
+                result[key] = {
+                    schema: this.filterSchemaProps(schema, val, '', true),
+                    data: this.filterSchemaProps(wholeData, val, '', true)};
             } else {
-                result[key] = this.isArrayOrObject(val) ? this.insertSchemaIntoData(val, schema) : val;
+                result[key] = this.isArrayOrObject(val) ? this.insertSchemaIntoData(val, schema, wholeData) : val;
             }
         }
         return result;
