@@ -6,23 +6,16 @@ import Form from "react-jsonschema-form";
 const SCHEMA_GROUP = '_schemaGroup';
 
 const data_sample = {
-    "k1": "v1",
-    "k2": "v2",
-    "k3": {
-        "k31": "v31",
-        "k32": "v32",
-        "k33": [
-            {
-                "k331": "v331",
-                "k332": "v332",
-            },
-            {
-                "k333": "v333",
-                "k334": "v334",
-            }
-        ]
-    }
-};
+    title: "THIS iS A SAMPLE PAGE!",
+    done: false,
+    selection: 1,
+    grandpa: {
+        "papa": "Hisito!",
+        "mama": [
+            {"oki": "Yes, OKI!"},
+            {"rio": [
+                    {"apple": "Fuji!"},
+                    {"fruit": {name: "Ehime Orange!"}}]}]}};
 
 const schema_sample = {
     title: "Todo",
@@ -33,22 +26,17 @@ const schema_sample = {
         done: {type: "boolean", title: "Done?", default: false},
         selection: {type: "integer", title: "Select!"},
         grandpa: {
-            type: "object", title: "", properties: {
-                "papa": {
-                    type: "string", title: "I'm Papito"
-                },
+            type: "object",
+            title: "",
+            properties: {
                 "mama": {
-                    type: "object", title: "", properties: {
-                        "child": {
-                            type: "string", title: "I'm a child"
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-};
+                    type: "array", title: "", items: {
+                        "oki": {type: "string", title: "I'm OKI"},
+                        "rio": {
+                            type: "array",
+                            items: {
+                                "fruit": {type: "object", properties: {
+                                        name: {type: "string"}}}}}}}}}}};
 
 const log = (type) => console.log.bind(console, type);
 
@@ -62,7 +50,8 @@ elem_final.push(elem_parts);
 elem_final.push(elem_form);
 
 class App extends Component {
-    createDom(data) {
+    createDom(data, schema) {
+        data = schema ? this.processDataForDom(data, schema) : data;
         if (Array.isArray(data)) {
             let elements = [];
             for (let e of data) {
@@ -79,7 +68,8 @@ class App extends Component {
             let val = data[key];
             elements.push(React.createElement('dt', null, key));
             if (key.startsWith(SCHEMA_GROUP)) {
-                elements.push(React.createElement('dd', null, val));
+                console.log('####### schema=' + JSON.stringify(val));
+                elements.push(React.createElement('dd', null, <Form schema={val} />));
             } else {
                 elements.push(React.createElement('dd', null, this.isArrayOrObject(val) ? this.createDom(val) : val));
             }
@@ -229,7 +219,7 @@ class App extends Component {
     render() {
         return (
             <div>
-                {this.createDom(data_sample)}
+                {this.createDom(data_sample, schema_sample)}
             </div>
         );
     };
