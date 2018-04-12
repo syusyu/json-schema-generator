@@ -66,7 +66,7 @@ class App extends Component {
         if (Array.isArray(data)) {
             let elements = [];
             for (let e of data) {
-                elements.push(this.createDom(e));
+                elements.push(this.doCreateDom(e));
             }
             return elements;
         } else {
@@ -91,14 +91,13 @@ class App extends Component {
     processDataForDom(data, schema) {
         let keysReplacedBySchema = this.extractSchemaReplaceKeys(schema);
         let dataReplacedBySchemaGroup = this.replaceDataBySchemaGroup(data, '', keysReplacedBySchema);
-        console.log('### keysReplacedBySchema=' + keysReplacedBySchema + ', dataReplacedBySchemaGroup=' + JSON.stringify(dataReplacedBySchemaGroup));
         return this.insertSchemaIntoData(dataReplacedBySchemaGroup, schema);
     }
     insertSchemaIntoData(data, schema) {
         if (Array.isArray(data)) {
             let elements = [];
             for (let e of data) {
-                elements.push(this.insertSchemaIntoData(e, schema));
+                elements.push(this.doInsertSchemaIntoData(e, schema));
             }
             return elements;
         } else {

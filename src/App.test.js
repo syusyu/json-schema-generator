@@ -486,14 +486,14 @@ const schemaGroup2= {
         grandpa: {
             type: "object", title: "", properties: {
                 "mama": {
-                    type: "object", title: "", properties: {
+                    type: "array", title: "", properties: {
                         "oki": {type: "string"}}}}}}};
 const schemaGroup3= {
     title: "Todo", type: "object", required: ["title"], properties: {
         grandpa: {
             type: "object", title: "", properties: {
                 "mama": {
-                    type: "object", title: "", properties: {
+                    type: "array", title: "", properties: {
                         "rio": {
                             type: "array", items: {
                                 properties: {
@@ -504,12 +504,12 @@ const expectedReplacedData2 = {
     "_schemaGroup1": schemaGroup,
     "grandpa": {
         "papa": "Hisito!",
-        "mama": {
-            "_schemaGroup2": schemaGroup2,
-            "rio": [
+        "mama": [
+            {"_schemaGroup2": schemaGroup2},
+            {"rio": [
                 {"apple": "Fuji!"},
                 {"fruit": {
-                        "_schemaGroup3": schemaGroup3}}]}}};
+                        "_schemaGroup3": schemaGroup3}}]}]}};
 
 
 describe('Process data for making DOM', () => {
