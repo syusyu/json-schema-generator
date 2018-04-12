@@ -89,12 +89,12 @@ class App extends Component {
 
 
     schemaReplaceKeys(data, keyPrefix) {
-        let props = data.properties;
+        let props = this.extractProps(data);
         let result = [];
         for (let key of Object.keys(props)) {
             let wholeKey = keyPrefix ? keyPrefix + '.' + key: key;
             let val = props[key];
-            if (this.isSchemaTypeObject(val)) {
+            if (this.isSchemaTypeArrayOrObject(val)) {
                 result.push(...this.schemaReplaceKeys(val, wholeKey));
             } else {
                 result.push(wholeKey);
@@ -102,6 +102,22 @@ class App extends Component {
         }
         return result;
     };
+    extractProps(data) {
+        let result = {};
+        if (this.isSchemaTypeObject(data)) {
+            result = data.properties;
+        } else if (this.isSchemaTypeArray(data)) {
+            result = data.properties;
+            result = result ? result : data.items;
+            if (result) {
+                result = result.properties ? result.properties : result;
+            }
+        }
+        if (!result) {
+            console.error('data is NOT object nor array. data=' + JSON.stringify(data));
+        }
+        return result;
+    }
 
 
     replaceDataBySchemaGroup(data, keyPrefix, keysForReplace, idxObj) {
@@ -141,13 +157,13 @@ class App extends Component {
         let result = {};
         for (let key of Object.keys(data)) {
             let wholeKey = keyPrefix ? keyPrefix + '.' + key: key;
-            wholeKey = wholeKey.replace(/properties./g, '');
+            wholeKey = wholeKey.replace(/properties\./g, '').replace(/\.items\./g, '\.');
 
             let val = data[key];
             if (filters.includes(wholeKey)) {
                 result[key] = val;
-            } else if (this.containsStartsWith(wholeKey, filters) || key === 'properties') {
-                result[key] = this.filterSchemaProps(val, filters, wholeKey, key !== 'properties');
+            } else if (this.containsStartsWith(wholeKey, filters) || key === 'properties' || key === 'items') {
+                result[key] = this.filterSchemaProps(val, filters, wholeKey, (key !== 'properties' && key !== 'items'));
             } else if (addsForcibly) {
                 result[key] = val;
             }
@@ -170,8 +186,14 @@ class App extends Component {
     isObject(val) {
         return val && typeof val === 'object' && !Array.isArray(val);
     };
+    isSchemaTypeArrayOrObject(val) {
+        return val && (val.type === 'object' || val.type === 'array');
+    }
     isSchemaTypeObject(val) {
         return val && val.type === 'object';
+    }
+    isSchemaTypeArray(val) {
+        return val && val.type === 'array';
     }
 
     render() {

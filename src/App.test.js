@@ -106,40 +106,59 @@ const schema = {
     }
 };
 const schema_array = {
-    title: "Todo",
     type: "object",
-    required: ["title"],
     properties: {
-        title: {type: "string", title: "Title", default: "A new task"},
-        done: {type: "boolean", title: "Done?", default: false},
-        selection: {type: "integer", title: "Select!"},
         grandpa: {
             type: "object",
-            title: "",
             properties: {
-                "papa": {
-                    type: "string", title: "I'm Papito"
-                },
-                "mama": {
-                    type: "array", title: "", items: {
+                "papa": {type: "string", title: "I'm Papito"},
+                "mama": {type: "array", title: "", items: {
                         properties: {
-                            "oki": {
-                                type: "string", title: "I'm a second"
-                            },
-                            "rio": {
-                                type: "string", title: "I'm a first"
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-};
-const expectedKeys = [`title`, `done`, `selection`, `grandpa.papa`, `grandpa.mama.oki`, `grandpa.mama.rio`];
+                            "oki": {type: "string", title: "I'm a second"},
+                            "rio": {type: "array", items: {
+                                    properties: {
+                                        "apple": {type: "string", title: "I like an apple"},
+                                        "fruit": {type: "object", properties: {
+                                                name: {type: "string"}}}}}}}}}}}}};
+const schema_array2 = {
+    type: "object",
+    properties: {
+        grandpa: {
+            type: "object",
+            properties: {
+                "papa": {type: "string", title: "I'm Papito"},
+                "mama": {type: "array", title: "", properties: {
+                        "oki": {type: "string", title: "I'm a second"},
+                        "rio": {type: "string", title: "I'm a first"}}}}}}};
+const schema_array3 = {
+    type: "object",
+    properties: {
+        grandpa: {
+            type: "object",
+            properties: {
+                "papa": {type: "string", title: "I'm Papito"},
+                "mama": {type: "array", title: "", properties: {
+                        "oki": {type: "string", title: "I'm a second"},
+                        "rio": {type: "string", title: "I'm a first"}}}}}}};
 
-it('Get schema replace keys', () => {
-    expect(app.schemaReplaceKeys(schema)).toEqual(expectedKeys);
+const expectedKeys = [`title`, `done`, `selection`, `grandpa.papa`, `grandpa.mama.oki`, `grandpa.mama.rio.apple`, `grandpa.mama.rio.fruit.name`];
+const expectedKeysArray = [`grandpa.papa`, `grandpa.mama.oki`, `grandpa.mama.rio.apple`, `grandpa.mama.rio.fruit.name`];
+const expectedKeysArray2 = [`grandpa.papa`, `grandpa.mama.oki`, `grandpa.mama.rio`];
+const expectedKeysArray3 = [`grandpa.papa`, `grandpa.mama.oki`, `grandpa.mama.rio`];
+
+describe('Get schema replace keys', () => {
+    it('object', () => {
+        expect(app.schemaReplaceKeys(schema)).toEqual(expectedKeys);
+    });
+    it('array1', () => {
+        expect(app.schemaReplaceKeys(schema_array)).toEqual(expectedKeysArray);
+    });
+    it('array2', () => {
+        expect(app.schemaReplaceKeys(schema_array2)).toEqual(expectedKeysArray2);
+    });
+    it('array3', () => {
+        expect(app.schemaReplaceKeys(schema_array3)).toEqual(expectedKeysArray3);
+    });
 });
 
 /**************** schemaGroup ***********************/
@@ -254,6 +273,7 @@ const filterKeys5 = [`grandpa.mama.oki`];
 const filterKeys6 = [`title`];
 const filterKeys7 = [`grandpa.mama.rio`];
 const filterKeys8 = [`title`, `selection`, `grandpa.mama.oki`];
+const filterKeys9  = [`grandpa.mama.rio.apple`, `grandpa.mama.rio.fruit.name`];
 
 const expectedSchema = {
     title: "Todo", type: "object", required: ["title"], properties: {
@@ -324,6 +344,18 @@ const expectedSchema8 = {
                 "mama": {type: "object", title: "", properties: {
                         "oki": {type: "string", title: "I'm a child"}}}}}}};
 
+const expectedSchema9 = {
+    type: "object",
+    properties: {
+        grandpa: {type: "object", properties: {
+                "mama": {type: "array", title: "", items: {
+                        properties: {
+                            "rio": {type: "array", items: {
+                                    properties: {
+                                        "apple": {type: "string", title: "I like an apple"},
+                                        "fruit": {type: "object", properties: {
+                                                name: {type: "string"}}}}}}}}}}}}};
+
 describe('Filter schema', () => {
     it('filter', () => {
         expect(app.filterSchemaProps(schema, filterKeys, '', true)).toEqual(expectedSchema);
@@ -349,6 +381,9 @@ describe('Filter schema', () => {
     it('filter8', () => {
         expect(app.filterSchemaProps(schema, filterKeys8, '', true)).toEqual(expectedSchema8);
     });
+    it('filter9', () => {
+        expect(app.filterSchemaProps(schema_array, filterKeys9, '', true)).toEqual(expectedSchema9);
+    });
  });
 
 /**************** Create DOM inserting JSON Schema ***********************/
@@ -363,6 +398,56 @@ const realData = {
             "rio": [
                 {"apple": "Fuji!"},
                 {"fruit": {name: "Ehime Orange!"}}]}}};
+const schemaGroup1 = {
+    title: "Todo",
+    type: "object",
+    required: ["title"],
+    properties: {
+        title: {type: "string", title: "Title", default: "A new task"},
+        done: {type: "boolean", title: "Done?", default: false},
+        selection: {type: "integer", title: "Select!"}
+    }
+};
+const schemaGroup2= {
+    title: "Todo",
+    type: "object",
+    required: ["title"],
+    properties: {
+        grandpa: {
+            type: "object", title: "", properties: {
+                "mama": {
+                    type: "object", title: "", properties: {
+                        "rio": {
+                            type: "array",
+                            items: {
+                                properties: {
+                                    "fruit": {
+                                        type: "object",
+                                        properties: {
+                                            name: {
+                                                type: "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+const expectedReplacedData = {
+    "_schemaGroup1": schemaGroup1,
+    "grandpa": {
+        "papa": "Hisito!",
+        "mama": {
+            "oki": "Yes, OKI!",
+            "rio": [
+                {"apple": "Fuji!"},
+                {"fruit": {
+                    "_schemaGroup2": schemaGroup2}}]}}};
 
 const realData2_array = {
     title: "THIS iS A SAMPLE PAGE!",
@@ -376,12 +461,6 @@ const realData2_array = {
                     {"apple": "Fuji!"},
                     {"fruit": {name: "Ehime Orange!"}}]}]}};
 
-const expectedReplacedData = {
-    "_schemaGroup1": ['title', 'done', 'selection'],
-    "grandpa": {
-        "_schemaGroup2": ['grandpa.papa'],
-        "mama": {
-                "_schemaGroup3": ['grandpa.mama.oki', 'grandpa.mama.rio']}}};
 
 // it('Create DOM inserting JSON Schema', () => {
 //     expect(app.createDom(data)).toEqual(expected);
