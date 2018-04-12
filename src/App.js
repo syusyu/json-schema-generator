@@ -6,16 +6,23 @@ import Form from "react-jsonschema-form";
 const SCHEMA_GROUP = '_schemaGroup';
 
 const data_sample = {
-    title: "THIS iS A SAMPLE PAGE!",
-    done: false,
-    selection: 1,
-    grandpa: {
-        "papa": "Hisito!",
-        "mama": [
-            {"oki": "Yes, OKI!"},
-            {"rio": [
-                    {"apple": "Fuji!"},
-                    {"fruit": {name: "Ehime Orange!"}}]}]}};
+    "title": "THIS iS A SAMPLE PAGE!",
+    "done": false,
+    "selection": 1,
+    "store": {
+        "name": "API store",
+        "branches": [
+            {"city": "Tokyo", "year": "10 years", "people": [
+                    {"name": "Oka", "age": 40}, {"name": "Oka2", "age": 42}]},
+            {"city": "SG", "year": "5 years", "people": [
+                    {"name": "Non", "age": 39}, {"name": "Non2", "age": 41}]}]}};
+const data_sample2 = {
+    "title": "THIS iS A SAMPLE PAGE!",
+    "done": false,
+    "selection": 1,
+    "store": {
+        "name": "API store",
+        "branches": ["Tokyo", "Singapore"]}};
 
 const schema_sample = {
     title: "Todo",
@@ -25,18 +32,27 @@ const schema_sample = {
         title: {type: "string", title: "Title", default: "A new task"},
         done: {type: "boolean", title: "Done?", default: false},
         selection: {type: "integer", title: "Select!"},
-        grandpa: {
-            type: "object",
-            title: "",
-            properties: {
-                "mama": {
-                    type: "array", title: "", items: {
-                        "oki": {type: "string", title: "I'm OKI"},
-                        "rio": {
-                            type: "array",
-                            items: {
-                                "fruit": {type: "object", properties: {
-                                        name: {type: "string"}}}}}}}}}}};
+        store: {
+            type: "object", title: "", properties: {
+                "name": {type: "string"},
+                "branches": {type: "array", items: {type: "object", properties: {
+                            "city": {type: "string"},
+                            "year": {type: "string"},
+                            "people": {type: "array", items: {type: "object", properties: {
+                                        "name": {type: "string"},
+                                        "age": {type: "integer"}}}}}}}}}}};
+const schema_sample2 = {
+    title: "Todo",
+    type: "object",
+    required: ["title"],
+    properties: {
+        title: {type: "string", title: "Title", default: "A new task"},
+        done: {type: "boolean", title: "Done?", default: false},
+        selection: {type: "integer", title: "Select!"},
+        store: {
+            type: "object", title: "", properties: {
+                "name": {type: "string"},
+                "branches": {type: "array", items: [{"type": "string"}]}}}}};
 
 const log = (type) => console.log.bind(console, type);
 
@@ -109,12 +125,20 @@ class App extends Component {
 
     extractSchemaReplaceKeys(data, keyPrefix) {
         let props = this.extractProps(data);
+        if (!props) {
+            return null;
+        }
         let result = [];
         for (let key of Object.keys(props)) {
             let wholeKey = keyPrefix ? keyPrefix + '.' + key: key;
             let val = props[key];
             if (this.isSchemaTypeArrayOrObject(val)) {
-                result.push(...this.extractSchemaReplaceKeys(val, wholeKey));
+                let subElements = this.extractSchemaReplaceKeys(val, wholeKey);
+                if (subElements) {
+                    result.push(...subElements);
+                } else {
+                    result.push(wholeKey);
+                }
             } else {
                 result.push(wholeKey);
             }
@@ -122,20 +146,18 @@ class App extends Component {
         return result;
     };
     extractProps(data) {
-        let result = {};
         if (this.isSchemaTypeObject(data)) {
-            result = data.properties;
-        } else if (this.isSchemaTypeArray(data)) {
-            result = data.properties;
-            result = result ? result : data.items;
-            if (result) {
-                result = result.properties ? result.properties : result;
+            return data.properties;
+        }
+        if (this.isSchemaTypeArray(data)) {
+            if (data.properties) {
+                return data.properties;
+            }
+            if (data.items && data.items.properties) {
+                return data.items.properties;
             }
         }
-        if (!result) {
-            console.error('data is NOT object nor array. data=' + JSON.stringify(data));
-        }
-        return result;
+        return null;
     }
 
 
@@ -219,6 +241,7 @@ class App extends Component {
     render() {
         return (
             <div>
+                <Form schema={schema_sample2}/>
                 {this.createDom(data_sample, schema_sample)}
             </div>
         );
