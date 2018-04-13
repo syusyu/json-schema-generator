@@ -37,17 +37,18 @@ const schema_sample2 = {
                 "branches": {type: "array", items: {type: "object", properties: {
                             "people": {type: "array", items: {type: "object", properties: {
                                         "age": {type: "integer"}}}}}}}}}}};
+const schema_sample3 = {};
 const schema_sample = {
     title: "",
     type: "object",
     required: ["title"],
     properties: {
-        title: {type: "string", title: "", default: "A new task"},
-        done: {type: "boolean", title: "", default: false},
-        selection: {type: "integer", title: ""},
+        title: {type: "string" , default: "A new task"},
+        done: {type: "boolean", default: false},
+        selection: {type: "integer" },
         store: {
             type: "object", title: "", properties: {
-                "name": {type: "string", title: ""},
+                "name": {type: "string", },
                 "branches": {type: "array", title: "", items: {type: "object", properties: {
                             "city": {type: "string"},
                             "year": {type: "string"},
@@ -55,7 +56,7 @@ const schema_sample = {
                                         "name": {type: "string"},
                                         "age": {type: "integer"}}}}}}}}}}};
 // const schema_sample2 = {
-//     title: "Todo",
+//     title: "",
 //     type: "object",
 //     required: ["title"],
 //     properties: {
@@ -101,12 +102,12 @@ class App extends Component {
             let val = data[key];
             if (key.startsWith(SCHEMA_GROUP)) {
                 console.log('####### schema=' + JSON.stringify(val.schema) + ' ##### data=' + JSON.stringify(val.data));
-                elements.push(React.createElement('dt', null, ''));
+                elements.push(React.createElement('dt', {className: "schema"}, ''));
                 elements.push(React.createElement('dd', null,
                     <Form schema={val.schema} formData={val.data} uiSchema={uiSchema}></Form>));
             } else {
                 elements.push(React.createElement('dt', null, key));
-                elements.push(React.createElement('dd', null, this.isArrayOrObject(val) ? this.createElement(val, wholeData) : val));
+                elements.push(React.createElement('dd', null, this.isArrayOrObject(val) ? this.createElement(val, wholeData) : (val ? val : '--')));
             }
         }
         return React.createElement('dl', null, elements);
