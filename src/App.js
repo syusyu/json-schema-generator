@@ -24,7 +24,7 @@ const data_sample2 = {
         "name": "API store",
         "branches": ["Tokyo", "Singapore"]}};
 
-const schema_sample = {
+const schema_sample2 = {
     title: "",
     type: "object",
     required: ["title"],
@@ -37,36 +37,43 @@ const schema_sample = {
                 "branches": {type: "array", items: {type: "object", properties: {
                             "people": {type: "array", items: {type: "object", properties: {
                                         "age": {type: "integer"}}}}}}}}}}};
-const schema_sample_bk = {
-    title: "Todo",
+const schema_sample = {
+    title: "",
     type: "object",
     required: ["title"],
     properties: {
-        title: {type: "string", title: "Title", default: "A new task"},
-        done: {type: "boolean", title: "Done?", default: false},
-        selection: {type: "integer", title: "Select!"},
+        title: {type: "string", title: "", default: "A new task"},
+        done: {type: "boolean", title: "", default: false},
+        selection: {type: "integer", title: ""},
         store: {
             type: "object", title: "", properties: {
-                "name": {type: "string"},
-                "branches": {type: "array", items: {type: "object", properties: {
+                "name": {type: "string", title: ""},
+                "branches": {type: "array", title: "", items: {type: "object", properties: {
                             "city": {type: "string"},
                             "year": {type: "string"},
-                            "people": {type: "array", items: {type: "object", properties: {
+                            "people": {type: "array", title: "", items: {type: "object", properties: {
                                         "name": {type: "string"},
                                         "age": {type: "integer"}}}}}}}}}}};
-const schema_sample2 = {
-    title: "Todo",
-    type: "object",
-    required: ["title"],
-    properties: {
-        title: {type: "string", title: "Title", default: "A new task"},
-        done: {type: "boolean", title: "Done?", default: false},
-        selection: {type: "integer", title: "Select!"},
-        store: {
-            type: "object", title: "", properties: {
-                "name": {type: "string"},
-                "branches": {type: "array", items: [{"type": "string"}]}}}}};
+// const schema_sample2 = {
+//     title: "Todo",
+//     type: "object",
+//     required: ["title"],
+//     properties: {
+//         title: {type: "string", title: "Title", default: "A new task"},
+//         done: {type: "boolean", title: "Done?", default: false},
+//         selection: {type: "integer", title: "Select!"},
+//         store: {
+//             type: "object", title: "", properties: {
+//                 "name": {type: "string"},
+//                 "branches": {type: "array", items: [{"type": "string"}]}}}}};
 
+const uiSchema = {
+    "ui:title": "",
+    "ui:options":  {
+        addable: false,
+        removable: false
+    }
+};
 const log = (type) => console.log.bind(console, type);
 
 
@@ -92,12 +99,13 @@ class App extends Component {
         let elements = [];
         for (let key of Object.keys(data)) {
             let val = data[key];
-            elements.push(React.createElement('dt', null, key));
             if (key.startsWith(SCHEMA_GROUP)) {
-                log('####### schema=' + JSON.stringify(val));
-                elements.push(React.createElement('dd', null, <Form schema={val.schema} formData={val.data}/>));
-                // elements.push(React.createElement('dd', null, <Form schema={val} />));
+                console.log('####### schema=' + JSON.stringify(val.schema) + ' ##### data=' + JSON.stringify(val.data));
+                elements.push(React.createElement('dt', null, ''));
+                elements.push(React.createElement('dd', null,
+                    <Form schema={val.schema} formData={val.data} uiSchema={uiSchema}></Form>));
             } else {
+                elements.push(React.createElement('dt', null, key));
                 elements.push(React.createElement('dd', null, this.isArrayOrObject(val) ? this.createElement(val, wholeData) : val));
             }
         }
