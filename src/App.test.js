@@ -112,18 +112,18 @@ const replaceKeys4 = [];
 const replaceKeys5 = null;
 
 const expectedReplaceData = {
-    "_schemaGroup1": ['k1'],
+    "_schemaGroup1": [{'k1': 'v1'}],
     "k2": "v2",
     "k3": {
-        "_schemaGroup2": ['k3.k31'],
+        "_schemaGroup2": [{'k3.k31': 'v31'}],
         "k32": "v32",
         "k33": [
             {
-                "_schemaGroup3": ['k3.k33.k331'],
+                "_schemaGroup3": [{'k3.k33.k331': 'v331'}],
                 "k332": "v332",
             },
             {
-                "_schemaGroup4": ['k3.k33.k333'],
+                "_schemaGroup4": [{'k3.k33.k333': 'v333'}],
                 "k334": "v334",
             }
         ]
@@ -131,12 +131,12 @@ const expectedReplaceData = {
 };
 const expectedReplaceData2 = {
     "k1": "v1",
-    "_schemaGroup1": ['k2'],
+    "_schemaGroup1": [{'k2': 'v2'}],
     "k3": {
-        "_schemaGroup2": ['k3.k31', 'k3.k32'],
+        "_schemaGroup2": [{'k3.k31': 'v31'}, {'k3.k32': 'v32'}],
         "k33": [
             {
-                "_schemaGroup3": ['k3.k33.k331'],
+                "_schemaGroup3": [{'k3.k33.k331': 'v331'}],
                 "k332": "v332",
             },
             {
@@ -155,10 +155,10 @@ const expectedReplaceData3 = {
         "k32": "v32",
         "k33": [
             {
-                "_schemaGroup1": ['k3.k33.k331', 'k3.k33.k332']
+                "_schemaGroup1": [{'k3.k33.k331': 'v331'}, {'k3.k33.k332': 'v332'}]
             },
             {
-                "_schemaGroup2": ['k3.k33.k333', 'k3.k33.k334']
+                "_schemaGroup2": [{'k3.k33.k333': 'v333'}, {'k3.k33.k334': 'v334'}]
             }
         ]
     }
@@ -257,7 +257,6 @@ const expectedSchema4 = {
                             "year": {type: "string"},
                             "people": {type: "array", items: {type: "object", properties: {
                                         "age": {type: "integer"}}}}}}}}}}};
-
 const expectedSchema5 = {
     title: "Todo",
     type: "object",
@@ -280,38 +279,96 @@ const expectedSchema6 = {
                 "branches": {type: "array", items: [{"type": "string"}]}}}}};
 
 describe('Filter schema', () => {
-    it('filter', () => {
+    it('filter schema1', () => {
         expect(app.filterSchemaProps(schema, filterKeys, '', true)).toEqual(expectedSchema);
     });
-    it('filter2', () => {
+    it('filter schema2', () => {
         expect(app.filterSchemaProps(schema, filterKeys2, '', true)).toEqual(expectedSchema2);
     });
-    it('filter3', () => {
+    it('filter schema3', () => {
         expect(app.filterSchemaProps(schema, filterKeys3, '', true)).toEqual(expectedSchema3);
     });
-    it('filter4', () => {
+    it('filter schema4', () => {
         expect(app.filterSchemaProps(schema, filterKeys4, '', true)).toEqual(expectedSchema4);
     });
-    it('filter5', () => {
+    it('filter schema5', () => {
         expect(app.filterSchemaProps(schema2, filterKeys5, '', true)).toEqual(expectedSchema5);
     });
-    it('filter6', () => {
+    it('filter schema6', () => {
         expect(app.filterSchemaProps(schema2, filterKeys6, '', true)).toEqual(expectedSchema6);
     });
  });
+
+/**************** Filter data ***********************/
+const data1 = {
+    "title": "THIS iS A SAMPLE PAGE!",
+    "done": false,
+    "selection": 1,
+    "store": {
+        "name": "API store",
+        "branches": [
+            {"city": "Tokyo", "year": "10 years", "people": [
+                    {"name": "Oka", "age": 40}, {"name": "Oka2", "age": 42}]},
+            {"city": "SG", "year": "5 years", "people": [
+                    {"name": "Non", "age": 39}, {"name": "Non2", "age": 41}]}]}};
+
+ const filterEntries = [{'title': 'THIS iS A SAMPLE PAGE!'}, {'done': false}, {'selection': 1},
+     {'store.name': "API store"}, {'store.branches.city': "Tokyo"}, {'store.branches.year': '10 years'}, {'store.branches.people.name': 'Oka'}, {'store.branches.people.age': 40}];
+const expectedData11 = {
+    "title": "THIS iS A SAMPLE PAGE!",
+    "done": false,
+    "selection": 1,
+    "store": {
+        "name": "API store",
+        "branches": [
+            {"city": "Tokyo", "year": "10 years", "people": [
+                    {"name": "Oka", "age": 40}]}]}};
+
+const filterEntries2 = [{'selection': 1}];
+const expectedData12 = {
+    "selection": 1};
+
+const filterEntries3 = [{'store.name': 'API store'}];
+const expectedData13 = {
+    "store": {
+        "name": "API store"}};
+
+const filterEntries4 = [{'store.branches.year': '5 years'}, {'store.branches.people.age': 41}];
+const expectedData14 = {
+    "store": {
+        "branches": [
+            {"year": "5 years", "people": [
+                    {"age": 41}]}]}};
+
+
+describe('Filter data', () => {
+    it('filter data1', () => {
+        expect(app.filterData(data1, filterEntries)).toEqual(expectedData11);
+    });
+    it('filter data2', () => {
+        expect(app.filterData(data1, filterEntries2)).toEqual(expectedData12);
+    });
+    it('filter data3', () => {
+        expect(app.filterData(data1, filterEntries3)).toEqual(expectedData13);
+    });
+    it('filter data4', () => {
+        expect(app.filterData(data1, filterEntries4)).toEqual(expectedData14);
+    });
+});
+
 
 /**************** Process data for making DOM ***********************/
 const realData = {
     "title": "THIS iS A SAMPLE PAGE!",
     "done": false,
     "selection": 1,
-    "grandpa": {
-        "papa": "Hisito!",
-        "mama": {
-            "oki": "Yes, OKI!",
-            "rio": [
-                {"apple": "Fuji!"},
-                {"fruit": {"name": "Ehime Orange!"}}]}}};
+    "store": {
+        "name": "API store",
+        "branches": [
+            {"city": "Tokyo", "year": "10 years", "people": [
+                    {"name": "Oka", "age": 40}, {"name": "Oka2", "age": 42}]},
+            {"city": "SG", "year": "5 years", "people": [
+                    {"name": "Non", "age": 39}, {"name": "Non2", "age": 41}]}]}};
 const realSchema = {
     title: "Todo",
     type: "object",
@@ -320,110 +377,62 @@ const realSchema = {
         title: {type: "string", title: "Title", default: "A new task"},
         done: {type: "boolean", title: "Done?", default: false},
         selection: {type: "integer", title: "Select!"},
-        grandpa: {
-            type: "object",
-            title: "",
-            properties: {
-                "mama": {
-                    type: "object", title: "", properties: {
-                        "rio": {
-                            type: "array",
-                            items: {
-                                properties: {
-                                    "fruit": {type: "object", properties: {
-                                            name: {type: "string"}}}}}}}}}}}};
-const schemaGroup = {
-    title: "Todo", type: "object", required: ["title"], properties: {
-        title: {type: "string", title: "Title", default: "A new task"},
-        done: {type: "boolean", title: "Done?", default: false},
-        selection: {type: "integer", title: "Select!"}
-    }
-};
-const schemaGroup1= {
-    title: "Todo", type: "object", required: ["title"], properties: {
-        grandpa: {
+        store: {
             type: "object", title: "", properties: {
-                "mama": {
-                    type: "object", title: "", properties: {
-                        "rio": {
-                            type: "array", items: {
-                                properties: {
-                                    "fruit": {
-                                        type: "object", properties: {
-                                            name: {type: "string"}}}}}}}}}}}};
-const expectedReplacedData = {
-    "_schemaGroup1": {schema: schemaGroup},
-    "grandpa": {
-        "papa": "Hisito!",
-        "mama": {
-            "oki": "Yes, OKI!",
-            "rio": [
-                {"apple": "Fuji!"},
-                {"fruit": {
-                    "_schemaGroup2": {schema: schemaGroup1}}}]}}};
-
-
-const realData2_array = {
-    title: "THIS iS A SAMPLE PAGE!",
-    done: false,
-    selection: 1,
-    grandpa: {
-        "papa": "Hisito!",
-        "mama": [
-            {"oki": "Yes, OKI!"},
-            {"rio": [
-                    {"apple": "Fuji!"},
-                    {"fruit": {name: "Ehime Orange!"}}]}]}};
-const realSchema2 = {
+                "branches": {type: "array", items: {type: "object", properties: {
+                            "people": {type: "array", items: {type: "object", properties: {
+                                        "age": {type: "integer"}}}}}}}}}}};
+const dataGroup = {
+    "title": "THIS iS A SAMPLE PAGE!",
+    "done": false,
+    "selection": 1};
+const schemaGroup = {
     title: "Todo",
     type: "object",
     required: ["title"],
     properties: {
         title: {type: "string", title: "Title", default: "A new task"},
         done: {type: "boolean", title: "Done?", default: false},
-        selection: {type: "integer", title: "Select!"},
-        grandpa: {
-            type: "object",
-            title: "",
-            properties: {
-                "mama": {
-                    type: "array", title: "", properties: {
-                        "oki": {type: "string"},
-                        "rio": {
-                            type: "array",
-                            items: {
-                                properties: {
-                                    "fruit": {type: "object", properties: {
-                                            name: {type: "string"}}}}}}}}}}}};
-const schemaGroup2= {
-    title: "Todo", type: "object", required: ["title"], properties: {
-        grandpa: {
+        selection: {type: "integer", title: "Select!"}}};
+const dataGroup11 = {
+    "store": {
+        "branches": [
+            {"people": [
+                    {"age": 40}]}]}};
+const dataGroup12 = {
+    "store": {
+        "branches": [
+            {"people": [
+                    {"age": 42}]}]}};
+const dataGroup13 = {
+    "store": {
+        "branches": [
+            {"people": [
+                    {"age": 39}]}]}};
+const dataGroup14 = {
+    "store": {
+        "branches": [
+            {"people": [
+                    {"age": 41}]}]}};
+const schemaGroup1= {
+    title: "Todo",
+    type: "object",
+    required: ["title"],
+    properties: {
+        store: {
             type: "object", title: "", properties: {
-                "mama": {
-                    type: "array", title: "", properties: {
-                        "oki": {type: "string"}}}}}}};
-const schemaGroup3= {
-    title: "Todo", type: "object", required: ["title"], properties: {
-        grandpa: {
-            type: "object", title: "", properties: {
-                "mama": {
-                    type: "array", title: "", properties: {
-                        "rio": {
-                            type: "array", items: {
-                                properties: {
-                                    "fruit": {
-                                        type: "object", properties: {
-                                            name: {type: "string"}}}}}}}}}}}};
-const expectedReplacedData2 = {
-    "_schemaGroup1": {schema: schemaGroup},
-    "grandpa": {
-        "papa": "Hisito!",
-        "mama": [
-            {"_schemaGroup2": {schema: schemaGroup2}},
-            {"rio": [
-                {"apple": "Fuji!"},
-                {"fruit": {
-                        "_schemaGroup3": {schema: schemaGroup3}}}]}]}};
+                "branches": {type: "array", items: {type: "object", properties: {
+                            "people": {type: "array", items: {type: "object", properties: {
+                                        "age": {type: "integer"}}}}}}}}}}};
+const expectedReplacedData = {
+    "_schemaGroup1": {schema: schemaGroup, data: dataGroup},
+    "store": {
+        "name": "API store",
+        "branches": [
+            {"city": "Tokyo", "year": "10 years", "people": [
+                    {"name": "Oka", "_schemaGroup2": {schema: schemaGroup1, data: dataGroup11}}, {"name": "Oka2", "_schemaGroup3": {schema: schemaGroup1, data: dataGroup12}}]},
+            {"city": "SG", "year": "5 years", "people": [
+                    {"name": "Non", "_schemaGroup4": {schema: schemaGroup1, data: dataGroup13}}, {"name": "Non2", "_schemaGroup5": {schema: schemaGroup1, data: dataGroup14}}]}]}};
 
 
 describe('Process data for making DOM', () => {

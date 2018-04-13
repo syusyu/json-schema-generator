@@ -126,9 +126,8 @@ class App extends Component {
         for (let key of Object.keys(data)) {
             let val = data[key];
             if (key.startsWith(SCHEMA_GROUP)) {
-                result[key] = {
-                    schema: this.filterSchemaProps(schema, val, '', true),
-                    data: this.filterSchemaProps(wholeData, val, '', true)};
+                let keys = val.map(e => Object.keys(e)[0]);
+                result[key] = {schema: this.filterSchemaProps(schema, keys, '', true), data: this.filterData(wholeData, val)};
             } else {
                 result[key] = this.isArrayOrObject(val) ? this.insertSchemaIntoData(val, schema, wholeData) : val;
             }
@@ -195,7 +194,7 @@ class App extends Component {
                 idxObj = idxObj ? idxObj : {idx: 0};
                 let idx = isPrevReplacable ? idxObj.idx : ++idxObj.idx;
                 let keysOfSchemaGroup = result[SCHEMA_GROUP + idx];
-                result[SCHEMA_GROUP + idx] = keysOfSchemaGroup ? [...keysOfSchemaGroup, wholeKey] : [wholeKey];
+                result[SCHEMA_GROUP + idx] = keysOfSchemaGroup ? [...keysOfSchemaGroup, {[wholeKey]: val}] : [{[wholeKey]: val}];
                 isPrevReplacable = true;
             } else {
                 isPrevReplacable = false;
@@ -217,7 +216,7 @@ class App extends Component {
             let val = data[key];
             if (filters.includes(wholeKey)) {
                 result[key] = val;
-            } else if (this.containsStartsWith(wholeKey, filters) || key === 'properties' || key === 'items') {
+            } else if (this.isFilterStartsWithKey(wholeKey, filters) || key === 'properties' || key === 'items') {
                 result[key] = this.filterSchemaProps(val, filters, wholeKey, (key !== 'properties' && key !== 'items'));
             } else if (addsForcibly) {
                 result[key] = val;
@@ -228,7 +227,68 @@ class App extends Component {
         return result;
     };
 
-    containsStartsWith(wholeKey, filters) {
+    filterData(data, filters, keyPrefix) {
+        if (!filters) {
+            return data;
+        }
+        if (Array.isArray(data)) {
+            let elements = [];
+            for (let e of data) {
+                let element = this.doFilterData(e, filters, keyPrefix);
+                if (!this.isEmpty(element)) {
+                    elements.push(element);
+                }
+            }
+            return elements;
+        } else {
+            return this.doFilterData(data, filters, keyPrefix);
+        }
+    };
+    doFilterData(data, filters, keyPrefix) {
+        let result = {};
+        for (let key of Object.keys(data)) {
+            let wholeKey = keyPrefix ? keyPrefix + '.' + key: key;
+            let val = data[key];
+            if (this.isFilterIncludesEntry(wholeKey, val, filters)) {
+                result[key] = val;
+            } else if (this.isFilterStartsWithEntryKey(wholeKey, filters) ) {
+                let child = this.filterData(val, filters, wholeKey);
+                if (!this.isEmpty(child)) {
+                    result[key] = child;
+                }
+            }
+        }
+        return result;
+    };
+
+    isEmpty(obj) {
+        if (!obj) {
+            return true;
+        }
+        let strObj = JSON.stringify(obj);
+        return strObj === JSON.stringify({}) || obj.length === 0;
+    };
+
+    isFilterIncludesEntry(wholeKey, val, filters) {
+        for (let filter of filters) {
+            let filterKey = Object.keys(filter)[0];
+            let filterVal = filter[filterKey];
+            if (filterKey === wholeKey && val === filterVal) {
+                return true;
+            }
+        }
+        return false;
+    };
+    isFilterStartsWithEntryKey(wholeKey, filters) {
+        for (let filter of filters) {
+            let filterKey = Object.keys(filter)[0];
+            if (filterKey.startsWith(wholeKey)) {
+                return true;
+            }
+        }
+        return false;
+    };
+    isFilterStartsWithKey(wholeKey, filters) {
         for (let filter of filters) {
             if (filter.startsWith(wholeKey)) {
                 return true;
@@ -245,13 +305,13 @@ class App extends Component {
     };
     isSchemaTypeArrayOrObject(val) {
         return val && (val.type === 'object' || val.type === 'array');
-    }
+    };
     isSchemaTypeObject(val) {
         return val && val.type === 'object';
-    }
+    };
     isSchemaTypeArray(val) {
         return val && val.type === 'array';
-    }
+    };
 
     render() {
         return (
