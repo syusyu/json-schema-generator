@@ -31,3 +31,19 @@ dl dd{
 dt.schema {
     background-color: antiquewhite;
 }
+
+table{
+    border-collapse:collapse;
+    margin:0 auto;
+}
+td,th{
+    padding:10px;
+    border-bottom:1px solid #ccc;
+}
+th{
+    color:#fff;
+    background:#005ab3;
+}
+table tr td:nth-child(odd){
+    background:#e6f2ff;
+}

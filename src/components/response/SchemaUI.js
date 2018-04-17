@@ -55,18 +55,6 @@ const schema_sample = {
                             "people": {type: "array", title: "", items: {type: "object", properties: {
                                         "name": {type: "string"},
                                         "age": {type: "integer"}}}}}}}}}}};
-// const schema_sample2 = {
-//     title: "",
-//     type: "object",
-//     required: ["title"],
-//     properties: {
-//         title: {type: "string", title: "Title", default: "A new task"},
-//         done: {type: "boolean", title: "Done?", default: false},
-//         selection: {type: "integer", title: "Select!"},
-//         store: {
-//             type: "object", title: "", properties: {
-//                 "name": {type: "string"},
-//                 "branches": {type: "array", items: [{"type": "string"}]}}}}};
 
 const uiSchema = {
     "ui:title": "",
@@ -79,7 +67,7 @@ const log = (type) => console.log.bind(console, type);
 
 
 
-class App extends Component {
+class SchemaUI extends Component {
     build(data, schema) {
         let processedData = schema ? this.processDataForDom(data, schema) : data;
         return this.createElement(processedData, data);
@@ -111,6 +99,21 @@ class App extends Component {
             }
         }
         return React.createElement('dl', null, elements);
+    };
+    doCreateTableElement(data, wholeData) {
+        let elements = [];
+        for (let key of Object.keys(data)) {
+            let val = data[key];
+            if (key.startsWith(SCHEMA_GROUP)) {
+                elements.push(React.createElement('th', {className: "schema"}, ''));
+                elements.push(React.createElement('td', null,
+                    <Form schema={val.schema} formData={val.data} uiSchema={uiSchema}></Form>));
+            } else {
+                elements.push(React.createElement('th', null, key));
+                elements.push(React.createElement('td', null, this.isArrayOrObject(val) ? this.createElement(val, wholeData) : (val ? val : '--')));
+            }
+        }
+        return React.createElement('table', null, React.createElement('tr', null, elements));
     };
 
 
@@ -331,5 +334,5 @@ class App extends Component {
     };
 }
 
-export default App;
+export default SchemaUI;
 
