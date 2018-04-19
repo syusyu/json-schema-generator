@@ -4,7 +4,8 @@ import Form from "react-jsonschema-form";
 
 const SCHEMA_GROUP = '_schemaGroup';
 
-const data_sample = {
+const data_sample = {};
+const data_sample3 = {
     "title": "THIS iS A SAMPLE PAGE!",
     "done": false,
     "selection": 1,
@@ -325,11 +326,18 @@ class SchemaUI extends Component {
     };
 
     render() {
-        const {responseBody} = this.props;
+        const {responseBody, jsonSchema, actions} = this.props;
+        console.log('###props=' + JSON.stringify(this.props));
         return (
             <div>
-                <p>Yes:{JSON.stringify(responseBody)}</p>
-                {this.build(data_sample, schema_sample)}
+                <div>
+                    {this.build(responseBody, jsonSchema)}
+                </div>
+                <div>
+                    JSON Schema:<br />
+                    <textarea cols="100" rows="10"
+                              onChange={actions.updateJsonSchema}>{jsonSchema}</textarea>
+                </div>
             </div>
         );
     };
