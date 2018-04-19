@@ -1,13 +1,15 @@
 import SchemaUI from '../components/response/SchemaUI'
 import {connect} from 'react-redux'
 import {bindActionCreators} from "redux";
-import {updateJsonSchema} from "../actions";
+import {updateJsonSchema, UPDATE_JSON_SCHEMA} from "../actions";
 
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        actions: bindActionCreators({updateJsonSchema}, dispatch)
-    }
+        onChange: (e) => dispatch({
+            type: UPDATE_JSON_SCHEMA, jsonSchema: e.target.value
+        })
+    };
 }
 
 export default connect(
