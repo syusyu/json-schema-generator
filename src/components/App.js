@@ -1,6 +1,6 @@
 import React from 'react'
-import Request from './Request'
-import SchemaUI from './response/SchemaUI'
+import Request from '../containers/request'
+import SchemaUI from '../containers/schemaUI'
 
 const App = () => {
     return (

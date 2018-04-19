@@ -1,4 +1,4 @@
-import {Request} from '../components/Request'
+import Request from '../components/Request'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import {runApi} from '../actions'
@@ -10,6 +10,6 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 export default connect(
-    (store) => ({responseBody: store.responseBody}),
-    mapDispatchToｚProps
+    (store) => (store.request),
+    mapDispatchToProps
 )(Request)

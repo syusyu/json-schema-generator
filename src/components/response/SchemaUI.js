@@ -1,5 +1,4 @@
 import React, {Component} from "react";
-import {render} from "react-dom";
 
 import Form from "react-jsonschema-form";
 
@@ -89,7 +88,7 @@ class SchemaUI extends Component {
         for (let key of Object.keys(data)) {
             let val = data[key];
             if (key.startsWith(SCHEMA_GROUP)) {
-                console.log('####### schema=' + JSON.stringify(val.schema) + ' ##### data=' + JSON.stringify(val.data));
+                // console.log('####### schema=' + JSON.stringify(val.schema) + ' ##### data=' + JSON.stringify(val.data));
                 elements.push(React.createElement('dt', {className: "schema"}, ''));
                 elements.push(React.createElement('dd', null,
                     <Form schema={val.schema} formData={val.data} uiSchema={uiSchema}></Form>));
@@ -329,7 +328,7 @@ class SchemaUI extends Component {
         const {responseBody} = this.props;
         return (
             <div>
-                <p>{responseBody}</p>
+                <p>Yes:{responseBody}</p>
                 {this.build(data_sample, schema_sample)}
             </div>
         );
