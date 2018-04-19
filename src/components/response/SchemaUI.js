@@ -326,7 +326,7 @@ class SchemaUI extends Component {
     };
 
     render() {
-        const {responseBody, jsonSchema, onChange} = this.props;
+        const {responseBody, jsonSchema, actions} = this.props;
         // console.log('###SchemaUI.props=' + JSON.stringify(this.props));
         console.log('###SchemaUI.jsonSchema=' + JSON.stringify(jsonSchema));
         return (
@@ -336,8 +336,8 @@ class SchemaUI extends Component {
                 </div>
                 <div>
                     JSON Schema:<br />
-                    <textarea cols="100" rows="10"
-                              onChange={onChange}>{JSON.stringify(jsonSchema)}</textarea>
+                    <textarea cols="100" rows="10" value={JSON.stringify(jsonSchema, null, '\t')}
+                              onChange={e => actions.updateJsonSchema(e.target.value)}></textarea>
                 </div>
             </div>
         );

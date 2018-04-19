@@ -9,8 +9,6 @@ const temp = {'hoge':'hogehoge'};
 export const runApiMock = createAction(RUN_API_MOCK);
 export const runApi = createAction(RUN_API);
 export const receiveData = createAction(RECEIVE_DATA);
-// export const updateJsonSchema = createAction(UPDATE_JSON_SCHEMA, (event) => {jsonSchema: event.target.value});
-// export const updateJsonSchema = createAction(UPDATE_JSON_SCHEMA, () => temp);
 export const updateJsonSchema = createAction(UPDATE_JSON_SCHEMA);
 
 

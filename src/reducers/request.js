@@ -26,8 +26,8 @@ export default function request(state = initialState, action) {
             console.log('###receive.action=' + JSON.stringify(action));
             return {...state, responseBody: action.payload};
         case UPDATE_JSON_SCHEMA:
-            console.log('###updateJsonSchema.jsonSchema=' + JSON.stringify(action));
-            return {...state, jsonSchema: action.jsonSchema};
+            console.log('###updateJsonSchema.action=' + JSON.stringify(action));
+            return {...state, jsonSchema: action.payload ? JSON.parse(action.payload.replace(/\t/g, '')) : {}};
         default:
             return state;
     }
