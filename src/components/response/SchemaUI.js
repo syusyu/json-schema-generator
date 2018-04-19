@@ -36,8 +36,8 @@ const schema_sample2 = {
                 "branches": {type: "array", items: {type: "object", properties: {
                             "people": {type: "array", items: {type: "object", properties: {
                                         "age": {type: "integer"}}}}}}}}}}};
-const schema_sample3 = {};
-const schema_sample = {
+const schema_sample = {};
+const schema_sample3 = {
     title: "",
     type: "object",
     required: ["title"],
@@ -328,7 +328,7 @@ class SchemaUI extends Component {
         const {responseBody} = this.props;
         return (
             <div>
-                <p>Yes:{responseBody}</p>
+                <p>Yes:{JSON.stringify(responseBody)}</p>
                 {this.build(data_sample, schema_sample)}
             </div>
         );
