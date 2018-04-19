@@ -1,4 +1,4 @@
-import {RUN_API} from '../constants/ActionTypes'
+import {RUN_API} from "../actions/index"
 
 const initialState = {responseBody: '{"baz": "baz"}'}
 
