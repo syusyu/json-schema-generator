@@ -7,7 +7,9 @@ class Request extends Component {
             <div className="request">
                 <div>
                     <input type="text" name="url" size="100" />
-                    <a href="#" onClick={actions.runApi}>Run</a>
+                    <a href="#" onClick={actions.runApiMock}>Mock RUN</a>
+                    &nbsp;&nbsp;
+                    <a href="#" onClick={actions.runApi}>RUN</a>
                 </div>
                 <div className="request-parameter">
                     <div className="request-parameter__body">

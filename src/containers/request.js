@@ -1,11 +1,11 @@
 import Request from '../components/Request'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-import {runApi} from '../actions'
+import {runApiMock, runApi} from '../actions'
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        actions: bindActionCreators({runApi}, dispatch)
+        actions: bindActionCreators({runApiMock, runApi}, dispatch)
     }
 }
 
