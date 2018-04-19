@@ -326,8 +326,10 @@ class SchemaUI extends Component {
     };
 
     render() {
+        const {responseBody} = this.props;
         return (
             <div>
+                <p>{responseBody}</p>
                 {this.build(data_sample, schema_sample)}
             </div>
         );
