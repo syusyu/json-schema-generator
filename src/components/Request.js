@@ -2,22 +2,24 @@ import React, {Component} from "react";
 
 class Request extends Component {
     render() {
-        const {responseBody, actions} = this.props;
+        const {url, method, actions} = this.props;
         return (
             <div className="request">
                 <div>
-                    <input type="text" name="url" size="100" />
-                    <a href="#" onClick={actions.runApiMock}>Mock RUN</a>
-                    &nbsp;&nbsp;
-                    <a href="#" onClick={actions.runApi}>RUN</a>
+                    <input type="text" value={url} size="100" onChange={e => actions.changeUrl(e.target.value)} />
+                    <select value={method} onChange={e => actions.changeMethod(e.target.value)}>
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                    </select>
+                    <a href="#" onClick={() => actions.runApi({url: url, method: method})}>RUN</a>
                 </div>
                 <div className="request-parameter">
                     <div className="request-parameter__body">
-                        Request Body:<br />
+                        Request Body:<br/>
                         <textarea cols="50" rows="10"></textarea>
                     </div>
                     <div className="request-parameter__header">
-                        Request Header:<br />
+                        Request Header:<br/>
                         <textarea cols="50" rows="10"></textarea>
                     </div>
                 </div>

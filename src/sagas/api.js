@@ -3,6 +3,7 @@
  * @returns {Promise<any>}
  */
 export function runApi(request) {
+    console.log('### runApi is called. request=' + JSON.stringify(request));
     var myRequest = new Request(request.url, makeInit(request));
     return fetch(myRequest).then(res => res.json()).catch(error => {console.error(error)});
 };

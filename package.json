@@ -5,8 +5,9 @@
   "dependencies": {
     "react": "^16.3.1",
     "react-dom": "^16.3.1",
+    "react-jsonschema-form": "^1.0.2",
     "react-scripts": "1.1.4",
-    "react-jsonschema-form": "^1.0.2"
+    "redux-logger": "^3.0.6"
   },
   "scripts": {
     "start": "react-scripts start",

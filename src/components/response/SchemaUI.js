@@ -337,7 +337,7 @@ class SchemaUI extends Component {
                 <div>
                     JSON Schema:<br />
                     <textarea cols="100" rows="10" value={JSON.stringify(jsonSchema, null, '\t')}
-                              onChange={e => actions.updateJsonSchema(e.target.value)}></textarea>
+                              onChange={e => actions.changeJsonSchema(e.target.value)}></textarea>
                 </div>
             </div>
         );

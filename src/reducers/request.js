@@ -1,6 +1,10 @@
-import {RUN_API_MOCK, RECEIVE_DATA, UPDATE_JSON_SCHEMA} from "../actions/index"
+import {RUN_API, RUN_API_MOCK, RECEIVE_DATA, CHANGE_URL, CHANGE_METHOD, CHANGE_JSON_SCHEMA} from "../actions/index"
 
-const initialState = {responseBody: {}, jsonSchema: {
+const initialState = {
+    url: 'http://5ac7331ac884c50014441b16.mockapi.io/api/v1/items',
+    method: 'GET',
+    responseBody: {},
+    jsonSchema: {
         title: "",
         type: "object",
         required: ["title"],
@@ -22,11 +26,15 @@ export default function request(state = initialState, action) {
     switch (action.type) {
         case RUN_API_MOCK:
             return {...state, responseBody: "{'foo': 'bar'}"};
+        case RUN_API:
+            return {...state};
         case RECEIVE_DATA:
-            console.log('###receive.action=' + JSON.stringify(action));
             return {...state, responseBody: action.payload};
-        case UPDATE_JSON_SCHEMA:
-            console.log('###updateJsonSchema.action=' + JSON.stringify(action));
+        case CHANGE_URL:
+            return {...state, url: action.payload};
+        case CHANGE_METHOD:
+            return {...state, method: action.payload};
+        case CHANGE_JSON_SCHEMA:
             return {...state, jsonSchema: action.payload ? JSON.parse(action.payload.replace(/\t/g, '')) : {}};
         default:
             return state;
