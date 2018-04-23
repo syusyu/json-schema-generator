@@ -8,6 +8,15 @@ export function runApi(request) {
     return fetch(myRequest).then(res => res.json()).catch(error => {console.error(error)});
 };
 
+export const makeInit = (request) => {
+    var result = {
+        method: request.method || 'GET',
+        headers: makeHeaders(request),
+        mode: 'cors',
+        cache: 'no-cache' };
+    return request.body ? Object.assign({body: request.body}, result) : result;
+};
+
 export const makeHeaders = (request) => {
     var result = new Headers();
     result.append('Content-Type', 'application/json');
@@ -17,13 +26,4 @@ export const makeHeaders = (request) => {
         };
     }
     return result;
-};
-
-export const makeInit = (request) => {
-    var result = {
-        method: request.method || 'GET',
-        headers: makeHeaders(request),
-        mode: 'cors',
-        cache: 'no-cache' };
-    return request.body ? Object.assign({body: request.body}, result) : result;
 };
