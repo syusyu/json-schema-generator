@@ -27,3 +27,14 @@ export const makeHeaders = (request) => {
     }
     return result;
 };
+
+export const checkJSON = (text) => {
+    let result = true;
+    try {
+        JSON.parse(text)
+    } catch {
+        result = false;
+    }
+    return result;
+};
+

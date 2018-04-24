@@ -27,3 +27,10 @@ describe('Make init', () => {
        expect(actual).toEqual(expected);
    });
 });
+
+describe('Validate json'), () => {
+    const cases = [
+        {'{}': true}, {'{"a": "b"}': true}, {'{a: b}': true}, {'': false}, {'{a:': false}
+    ];
+    cases.forEach()
+}

@@ -10,6 +10,10 @@ button.btn {
     display: none;
 }
 
+textarea:disabled {
+    background: #cccccc;
+}
+
 dl{
     width:100%;
     border:1px solid #333;
