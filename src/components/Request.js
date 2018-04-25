@@ -10,6 +10,7 @@ class Request extends Component {
                     <select value={method} onChange={e => actions.changeMethod(e.target.value)}>
                         <option value="GET">GET</option>
                         <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
                         <option value="DELETE">DELETE</option>
                     </select>
                     <a href="#" onClick={() =>
@@ -19,7 +20,7 @@ class Request extends Component {
                     <div className="request-parameter__body">
                         Request Body:<br/>
                         <textarea id="request-body" cols="50" rows="10" value={requestBody}
-                                  disabled={method !== 'POST'}
+                                  disabled={method !== 'POST' && method !== 'PUT'}
                                   onChange={e => actions.changeRequestBody(e.target.value)}></textarea>
                     </div>
                     <div className="request-parameter__header">
