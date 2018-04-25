@@ -4,30 +4,30 @@
  */
 export function runApi(request) {
     const params = makeInit(request);
-    var data = new FormData();
+    console.log('### runApi.param=' + JSON.stringify(params));
     return fetch(request.url, params).then(res => res.json()).catch(error => {console.error(error)});
 };
 
 export const makeInit = (request) => {
+    const body = request.requestBody;
     let result = {
         method: request.method || 'GET',
         headers: makeHeaders(request),
+        body: body,
         mode: 'cors',
         cache: 'no-cache' };
-    const body = request.requestBody;
-    if (body && validateJSON(body)) {
-        let data = new FormData();
-        data.append("json", body);
-        result = Object.assign({body: data}, result);
+    if (!body || !validateJSON(body) || result.method === 'GET') {
+        delete result.body;
     }
     return result;
-    // return body && validateJSON(body) ? Object.assign({body: body}, result) : result;
-
 };
 
 
 export const makeHeaders = (request) => {
-    let result = JSON.parse('{"Content-Type": "application/json"}');
+    let result = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    };
     let headersTxt = request.requestHeaders;
     if (!headersTxt || !validateJSON(headersTxt)) {
         return result;

@@ -19,7 +19,7 @@ class Request extends Component {
                     <div className="request-parameter__body">
                         Request Body:<br/>
                         <textarea id="request-body" cols="50" rows="10" value={requestBody}
-                                  disabled={method !== 'POST'} defaultValue=""
+                                  disabled={method !== 'POST'}
                                   onChange={e => actions.changeRequestBody(e.target.value)}></textarea>
                     </div>
                     <div className="request-parameter__header">

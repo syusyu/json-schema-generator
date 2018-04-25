@@ -4,6 +4,7 @@ import {RUN_API, RUN_API_MOCK, RECEIVE_DATA,
 const initialState = {
     url: 'http://5ac7331ac884c50014441b16.mockapi.io/api/v1/items',
     method: 'GET',
+    requestBody: '{"id": 100, "name": "created by app"}',
     responseBody: {},
     jsonSchema:
         'title: "",¥n' +
