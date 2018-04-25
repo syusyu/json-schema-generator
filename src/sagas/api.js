@@ -14,25 +14,25 @@ export const makeInit = (request) => {
         headers: makeHeaders(request),
         mode: 'cors',
         cache: 'no-cache' };
-    return request.body ? Object.assign({body: request.body}, result) : result;
+    return request.requestBody && validateJSON(request.requestBody) ? Object.assign({body: request.requestBody}, result) : result;
 };
 
 export const makeHeaders = (request) => {
     var result = new Headers();
     result.append('Content-Type', 'application/json');
-    if (request.headers) {
-        for (const [key, value] of Object.entries(request.headers)) {
+    if (request.requestHeaders && validateJSON(request.requestHeaders)) {
+        for (const [key, value] of Object.entries(request.requestHeaders)) {
             result.append(key, value);
         };
     }
     return result;
 };
 
-export const checkJSON = (text) => {
+export const validateJSON = (text) => {
     let result = true;
     try {
-        JSON.parse(text)
-    } catch {
+        JSON.parse(text);
+    } catch (e) {
         result = false;
     }
     return result;
