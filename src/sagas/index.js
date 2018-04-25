@@ -6,8 +6,8 @@ import {runApi} from "./api";
 function* callApi(action) {
     try {
         // yield call(delay, 1000);
-        console.log('###action=' + JSON.stringify(action));
-        const request = {url: action.payload.url, method: action.payload.method};
+        console.log('### saga.action=' + JSON.stringify(action));
+        const request = {url: action.payload.url, method: action.payload.method, requestBody: action.payload.requestBody, requestHeaders: action.payload.requestHeaders};
         const data = yield call(runApi, request);
         yield put(receiveData(data));
     } catch (e) {

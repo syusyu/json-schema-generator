@@ -10,6 +10,7 @@ class Request extends Component {
                     <select value={method} onChange={e => actions.changeMethod(e.target.value)}>
                         <option value="GET">GET</option>
                         <option value="POST">POST</option>
+                        <option value="DELETE">DELETE</option>
                     </select>
                     <a href="#" onClick={() =>
                         actions.runApi({url: url, method: method, requestBody: requestBody, requestHeaders: requestHeaders})}>RUN</a>
@@ -18,7 +19,7 @@ class Request extends Component {
                     <div className="request-parameter__body">
                         Request Body:<br/>
                         <textarea id="request-body" cols="50" rows="10" value={requestBody}
-                                  disabled={method !== 'POST'} defaultValue="ddd"
+                                  disabled={method !== 'POST'} defaultValue=""
                                   onChange={e => actions.changeRequestBody(e.target.value)}></textarea>
                     </div>
                     <div className="request-parameter__header">

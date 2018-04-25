@@ -3,28 +3,40 @@
  * @returns {Promise<any>}
  */
 export function runApi(request) {
-    console.log('### runApi is called. request=' + JSON.stringify(request));
-    var myRequest = new Request(request.url, makeInit(request));
-    return fetch(myRequest).then(res => res.json()).catch(error => {console.error(error)});
+    const params = makeInit(request);
+    var data = new FormData();
+    return fetch(request.url, params).then(res => res.json()).catch(error => {console.error(error)});
 };
 
 export const makeInit = (request) => {
-    var result = {
+    let result = {
         method: request.method || 'GET',
         headers: makeHeaders(request),
         mode: 'cors',
         cache: 'no-cache' };
-    return request.requestBody && validateJSON(request.requestBody) ? Object.assign({body: request.requestBody}, result) : result;
+    const body = request.requestBody;
+    if (body && validateJSON(body)) {
+        let data = new FormData();
+        data.append("json", body);
+        result = Object.assign({body: data}, result);
+    }
+    return result;
+    // return body && validateJSON(body) ? Object.assign({body: body}, result) : result;
+
 };
 
+
 export const makeHeaders = (request) => {
-    var result = new Headers();
-    result.append('Content-Type', 'application/json');
-    if (request.requestHeaders && validateJSON(request.requestHeaders)) {
-        for (const [key, value] of Object.entries(request.requestHeaders)) {
-            result.append(key, value);
-        };
+    let result = JSON.parse('{"Content-Type": "application/json"}');
+    let headersTxt = request.requestHeaders;
+    if (!headersTxt || !validateJSON(headersTxt)) {
+        return result;
     }
+
+    const headers = JSON.parse(headersTxt);
+    for (let key of Object.keys(headers)) {
+        result[key] = headers[key];
+    };
     return result;
 };
 
