@@ -1,6 +1,6 @@
 import React, {Component} from "react";
-
 import Form from "react-jsonschema-form";
+import {validateJSON} from "../../utils/JSONUtilities";
 
 const SCHEMA_GROUP = '_schemaGroup';
 
@@ -68,8 +68,8 @@ const log = (type) => console.log.bind(console, type);
 
 
 class SchemaUI extends Component {
-    build(data, schema) {
-        let processedData = schema ? this.processDataForDom(data, schema) : data;
+    build(data, schemaTxt) {
+        let processedData = validateJSON(schemaTxt) ? this.processDataForDom(data, JSON.parse(schemaTxt)) : data;
         return this.createElement(processedData, data);
     }
 
@@ -327,7 +327,6 @@ class SchemaUI extends Component {
 
     render() {
         const {responseBody, jsonSchema, actions} = this.props;
-        console.log('###SchemaUI.jsonSchema=' + JSON.stringify(jsonSchema));
         return (
             <div>
                 <div>
@@ -335,7 +334,7 @@ class SchemaUI extends Component {
                 </div>
                 <div>
                     JSON Schema:<br />
-                    <textarea cols="100" rows="10" value={jsonSchema} disabled
+                    <textarea cols="110" rows="60" value={jsonSchema}
                               onChange={e => actions.changeJsonSchema(e.target.value)}></textarea>
                 </div>
             </div>

@@ -1,3 +1,5 @@
+import {validateJSON} from "../utils/JSONUtilities";
+
 /**
  * @param request should contains 'url' at least.
  * @returns {Promise<any>}
@@ -36,16 +38,6 @@ export const makeHeaders = (request) => {
     for (let key of Object.keys(headers)) {
         result[key] = headers[key];
     };
-    return result;
-};
-
-export const validateJSON = (text) => {
-    let result = true;
-    try {
-        JSON.parse(text);
-    } catch (e) {
-        result = false;
-    }
     return result;
 };
 
