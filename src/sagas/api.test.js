@@ -1,9 +1,5 @@
 import {runApi, makeHeaders, makeInit, validateJSON} from "./api";
 
-// const headers = new Headers();
-// headers.append('k1', 'v1');
-// headers.append('Content-Type','application/json');
-
 const expectedHeaders = {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -19,11 +15,11 @@ describe('Make headers', () => {
 describe('Make init', () => {
     var expected = {
         body: '{"k1": "v1"}',
-        method: 'GET',
+        method: 'POST',
         mode: 'cors',
         cache: 'no-cache' };
    it('normal', () => {
-       let actual = makeInit({requestBody: '{"k1": "v1"}'});
+       let actual = makeInit({method: 'POST', requestBody: '{"k1": "v1"}'});
        delete actual.headers;
        expect(actual).toEqual(expected);
    });

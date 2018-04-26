@@ -6,7 +6,7 @@ const initialState = {
     method: 'GET',
     requestBody: '{"id": 100, "name": "created by app"}',
     responseBody: {},
-    jsonSchema:
+    jsonSchema: "{" +
         'title: "",¥n' +
         'type: "object",¥n' +
         'required: ["title"],¥n' +

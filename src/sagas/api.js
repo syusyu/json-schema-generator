@@ -2,9 +2,9 @@
  * @param request should contains 'url' at least.
  * @returns {Promise<any>}
  */
-export function runApi(request) {
+export const runApi = (request) => {
     const params = makeInit(request);
-    console.log('### runApi.param=' + JSON.stringify(params));
+    // console.log('### runApi.param=' + JSON.stringify(params));
     return fetch(request.url, params).then(res => res.json()).catch(error => {console.error(error)});
 };
 
@@ -21,7 +21,6 @@ export const makeInit = (request) => {
     }
     return result;
 };
-
 
 export const makeHeaders = (request) => {
     let result = {
